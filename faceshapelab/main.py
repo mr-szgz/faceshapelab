@@ -289,6 +289,18 @@ class MainWindow(QMainWindow):
         )
         self.ui.faceSettingsDock.setWidget(self.ui.faceSettingsScrollArea)
         self.update_analysis_controls()
+        if self.settings.contains("window/geometry"):
+            self.restoreGeometry(self.settings.value("window/geometry"))
+        if self.settings.contains("window/state"):
+            self.restoreState(self.settings.value("window/state"))
+        for panel in self.panel_images:
+            key = "media/" + panel.objectName()
+            if self.settings.contains(key + "/path"):
+                self.load_media(
+                    panel,
+                    QUrl.fromLocalFile(self.settings.value(key + "/path", type=str)),
+                    self.settings.value(key + "/isImage", type=bool),
+                )
 
     def update_landmark_color_controls(self):
         layout = self.ui.landmarkColorsLayout
@@ -469,6 +481,9 @@ class MainWindow(QMainWindow):
         self.image_pixmaps[label] = QPixmap.fromImage(image)
         self.scale_image(label)
         time.setText("Frame 1 / 1")
+        key = "media/" + panel.objectName()
+        self.settings.setValue(key + "/path", url.toLocalFile())
+        self.settings.setValue(key + "/isImage", True)
         self.statusBar().showMessage(f"Loaded {url.fileName()} into {panel.title()}.")
         return True
 
@@ -534,6 +549,9 @@ class MainWindow(QMainWindow):
         self.playback_controls[panel][1].setEnabled(True)
         self.update_timeline(panel)
         self.update_playback(panel)
+        key = "media/" + panel.objectName()
+        self.settings.setValue(key + "/path", player.source().toLocalFile())
+        self.settings.setValue(key + "/isImage", False)
         self.statusBar().showMessage(
             f"Loaded {player.source().fileName()} into {panel.title()}."
         )
@@ -596,6 +614,8 @@ class MainWindow(QMainWindow):
             self.settings.setValue(
                 "controls/" + control.objectName(), getattr(control, getter)()
             )
+        self.settings.setValue("window/geometry", self.saveGeometry())
+        self.settings.setValue("window/state", self.saveState())
         self.settings.sync()
         for player in self.media_players.values():
             player.stop()

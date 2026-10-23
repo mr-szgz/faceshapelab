@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-23
+
 ### Added
 
+- Persisted window geometry, dock layout, and selected media in QSettings and restored both panels without model results on startup.
 - Added landmark region mappings for all eleven models and persistent per-region annotation colors.
 - Added Procrustes shape comparison between corresponding landmark arrays and automatic region comparisons for the selected faces.
 - Added sortable region and embedding similarity tables with percentage displays to two decimal places and `-1` for unavailable region scores.

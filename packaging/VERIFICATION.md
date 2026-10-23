@@ -1,5 +1,21 @@
 # Online installer verification
 
+## 0.3.0 release verification — 2026-10-23
+
+- Built `dist/FaceShapeLab-0.3.0-Setup.exe` with Inno Setup 6.7.3; 2,691,392 bytes, unsigned, with version metadata 0.3.0.
+- SHA-256: `093ac3378cbc4951ac0459b0875963629e007458469d7f516918392a109fa3fe`.
+- Full source suite: 140 tests and 2 subtests passed, including session restoration and sortable percentage comparisons.
+- Ruff, `uv lock --check --offline`, and whitespace checks passed. Dependency versions were unchanged.
+- Compiled-installer failure checks passed: missing CUDA stopped setup before downloads; dependency exit 37 aborted setup with exit 3.
+- Fresh silent installation into `.work/release 0.3.0 app` exited 0 and installed private Python 3.12.10, 38 production packages, and all 22 models.
+- All installed model hashes matched; all 4 detectors, 11 landmark modes, and 4 recognizers matched the upstream reference outputs on CUDA.
+- Installed Python and imports resolved under the installation directory, without development packages. Installed application source, UI, metadata, and README matched the release inputs.
+- Installed GUI checks passed for landmark and embedding comparisons, numeric sorting, percentage formatting, and session restoration without model results. The rendered UI was visually inspected.
+- Upgrade from the published 0.2.0 installer to 0.3.0 exited 0 in the isolated test directory, reusing the private runtime. Saved media settings and a user-created file survived; installed-source parity and comparison/session checks passed again.
+- Silent uninstall exited 0, removed the private Python/venv, application, and models, and preserved the user-created file.
+- Verification ran on the current Windows host, not a clean Windows VM.
+- Evidence is in `.work/release-0.3.0-*.log` and `.work/release-0.3.0-preview.png`.
+
 ## 0.2.0 release verification — 2026-10-23
 
 - Built `dist/FaceShapeLab-0.2.0-Setup.exe` with Inno Setup 6.7.3; 2,685,858 bytes.

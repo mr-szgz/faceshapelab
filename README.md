@@ -8,7 +8,7 @@ selections. No live-camera or VR processing is included.
 
 ### Windows online installer
 
-`dist/FaceShapeLab-0.2.0-Setup.exe` is a small online installer. It embeds only
+`dist/FaceShapeLab-0.3.0-Setup.exe` is a small online installer. It embeds only
 application source, the dependency lockfile, and setup metadata. Internet access is
 required: setup downloads uv 0.11.11, private Python 3.12.10, the locked production
 packages, and all 22 models (about 2.14 GB of model downloads). Python packages,
@@ -47,7 +47,7 @@ Silent installation supports `/VERYSILENT /SUPPRESSMSGBOXES /NORESTART`.
 To verify failure handling against a compiled installer:
 
 ```powershell
-python packaging/verify_failure_paths.py 'C:\Users\shoji\AppData\Local\Programs\Inno Setup 6\ISCC.exe' dist/FaceShapeLab-0.2.0-Setup.exe
+python packaging/verify_failure_paths.py 'C:\Users\shoji\AppData\Local\Programs\Inno Setup 6\ISCC.exe' dist/FaceShapeLab-0.3.0-Setup.exe
 ```
 
 This checks a missing CUDA toolkit and a dependency command returning exit code 37.
@@ -89,9 +89,18 @@ the model test suite. No models are downloaded automatically when launching the 
    ArcFace-128 aligned crop. Both save lossless RGB PNGs to the output folder with unique
    filenames and refresh Saved Files. Detected five-point landmarks can align a crop
    without a dense-landmark pass. A rejected dense result is never silently replaced.
-5. Detect faces in both panels and click **Compare Selected Faces**. The selected
+5. Detect faces in both panels and click **Compare Face Embeddings**. The selected
    recognizer embeds both faces and reports `50 × (1 + cosine_similarity)` on a 0–100
-   scale. This is a similarity score, not an identity probability.
+   scale, displayed as a percentage in the sortable embedding table. This is a
+   similarity score, not an identity probability.
+6. With landmarks detected in both panels using the selected model, the region
+   table automatically compares the selected faces. Similarity is `1 - Procrustes
+   distance`, displayed as a percentage to two decimal places. Unavailable regions
+   show `-1`. Click either column header to sort.
+
+The browse/output folders, window geometry, dock layout, and loaded media are
+restored from QSettings on startup. Model results are not saved; videos reopen
+paused at the start.
 
 Loading another image or receiving another video frame invalidates existing detections.
 Results from an older frame are discarded. Analysis runs on one background worker;
