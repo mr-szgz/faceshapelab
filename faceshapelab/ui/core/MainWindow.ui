@@ -160,40 +160,54 @@
          <property name="title">
           <string>Controls</string>
          </property>
-         <layout class="QGridLayout" name="leftControlsGrid">
-          <item row="0" column="0">
-           <widget class="QPushButton" name="leftDetectFacesButton">
-            <property name="text">
-             <string>Detect Faces</string>
-            </property>
-           </widget>
+         <layout class="QVBoxLayout" name="leftControlsLayout">
+          <item>
+           <layout class="QGridLayout" name="leftControlsGrid">
+            <item row="0" column="0">
+             <widget class="QPushButton" name="leftDetectFacesButton">
+              <property name="text">
+               <string>Detect Faces</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QPushButton" name="leftDetectLandmarksButton">
+              <property name="text">
+               <string>Detect Landmarks</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QPushButton" name="leftSaveFaceButton">
+              <property name="text">
+               <string>Save Face</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="leftSaveCroppedFaceButton">
+              <property name="text">
+               <string>Save Cropped Face</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
-          <item row="0" column="1">
-           <widget class="QPushButton" name="leftDetectLandmarksButton">
-            <property name="text">
-             <string>Detect Landmarks</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QPushButton" name="leftSaveFaceButton">
-            <property name="text">
-             <string>Save Face</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QPushButton" name="leftSaveCroppedFaceButton">
-            <property name="text">
-             <string>Save Cropped Face</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0" colspan="2">
-           <widget class="QComboBox" name="leftSelectedFaceComboBox">
-            <property name="accessibleName"><string>Selected face</string></property>
-            <property name="placeholderText"><string>No detected faces</string></property>
-           </widget>
+          <item>
+           <layout class="QFormLayout" name="leftDetectedFacesLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="leftDetectedFacesLabel">
+              <property name="text"><string>Detected Faces</string></property>
+              <property name="buddy"><cstring>leftSelectedFaceComboBox</cstring></property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="leftSelectedFaceComboBox">
+              <property name="accessibleName"><string>Selected face</string></property>
+              <property name="placeholderText"><string>No detected faces</string></property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -346,40 +360,54 @@
          <property name="title">
           <string>Controls</string>
          </property>
-         <layout class="QGridLayout" name="rightControlsGrid">
-          <item row="0" column="0">
-           <widget class="QPushButton" name="rightDetectFacesButton">
-            <property name="text">
-             <string>Detect Faces</string>
-            </property>
-           </widget>
+         <layout class="QVBoxLayout" name="rightControlsLayout">
+          <item>
+           <layout class="QGridLayout" name="rightControlsGrid">
+            <item row="0" column="0">
+             <widget class="QPushButton" name="rightDetectFacesButton">
+              <property name="text">
+               <string>Detect Faces</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QPushButton" name="rightDetectLandmarksButton">
+              <property name="text">
+               <string>Detect Landmarks</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QPushButton" name="rightSaveFaceButton">
+              <property name="text">
+               <string>Save Face</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="rightSaveCroppedFaceButton">
+              <property name="text">
+               <string>Save Cropped Face</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
-          <item row="0" column="1">
-           <widget class="QPushButton" name="rightDetectLandmarksButton">
-            <property name="text">
-             <string>Detect Landmarks</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QPushButton" name="rightSaveFaceButton">
-            <property name="text">
-             <string>Save Face</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QPushButton" name="rightSaveCroppedFaceButton">
-            <property name="text">
-             <string>Save Cropped Face</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0" colspan="2">
-           <widget class="QComboBox" name="rightSelectedFaceComboBox">
-            <property name="accessibleName"><string>Selected face</string></property>
-            <property name="placeholderText"><string>No detected faces</string></property>
-           </widget>
+          <item>
+           <layout class="QFormLayout" name="rightDetectedFacesLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="rightDetectedFacesLabel">
+              <property name="text"><string>Detected Faces</string></property>
+              <property name="buddy"><cstring>rightSelectedFaceComboBox</cstring></property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="rightSelectedFaceComboBox">
+              <property name="accessibleName"><string>Selected face</string></property>
+              <property name="placeholderText"><string>No detected faces</string></property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -762,27 +790,6 @@
           </property>
          </widget>
         </item>
-        <item row="5" column="0" colspan="2">
-         <widget class="QCheckBox" name="showLandmarksCheckBox">
-          <property name="text">
-           <string>Show Landmarks</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0" colspan="2">
-         <widget class="QCheckBox" name="showBoundingBoxesCheckBox">
-          <property name="text">
-           <string>Show Bounding Boxes</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="0" colspan="2"><widget class="QPushButton" name="compareFacesButton"><property name="text"><string>Compare Selected Faces</string></property></widget></item>
        </layout>
       </widget>
      </item>
@@ -799,6 +806,39 @@
        </property>
       </spacer>
      </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="compareFacesDock">
+   <property name="windowTitle">
+    <string>Compare Faces</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="compareFacesContents">
+    <layout class="QHBoxLayout" name="compareFacesLayout">
+     <item>
+      <widget class="QCheckBox" name="showLandmarksCheckBox">
+       <property name="text">
+        <string>Show Landmarks</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="showBoundingBoxesCheckBox">
+       <property name="text">
+        <string>Show Bounding Boxes</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item><widget class="QPushButton" name="compareFacesButton"><property name="text"><string>Compare Face Embeddings</string></property></widget></item>
     </layout>
    </widget>
   </widget>

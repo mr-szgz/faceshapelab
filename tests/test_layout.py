@@ -116,7 +116,7 @@ class LayoutTests(unittest.TestCase):
         self.assertTrue(self.window.statusBar().isVisible())
         for grid in (ui.leftControlsGrid, ui.rightControlsGrid):
             self.assertIsInstance(grid, QGridLayout)
-            self.assertEqual(grid.count(), 5)
+            self.assertEqual(grid.count(), 4)
             self.assertEqual(grid.itemAtPosition(0, 0).widget().text(), "Detect Faces")
             self.assertEqual(grid.itemAtPosition(0, 1).widget().text(), "Detect Landmarks")
             self.assertEqual(grid.itemAtPosition(1, 0).widget().text(), "Save Face")
@@ -198,6 +198,27 @@ class LayoutTests(unittest.TestCase):
         self.assertEqual(form.dockWidgetArea(dock), Qt.DockWidgetArea.LeftDockWidgetArea)
         form.close()
         source.close()
+
+    def test_compare_faces_dock_defaults_to_bottom_and_can_move(self):
+        ui = self.window.ui
+        dock = ui.compareFacesDock
+        self.assertEqual(dock.windowTitle(), "Compare Faces")
+        self.assertEqual(self.window.dockWidgetArea(dock), Qt.DockWidgetArea.BottomDockWidgetArea)
+        self.assertTrue(dock.isVisible())
+        for control in (
+            ui.showLandmarksCheckBox,
+            ui.showBoundingBoxesCheckBox,
+            ui.compareFacesButton,
+        ):
+            self.assertTrue(dock.isAncestorOf(control))
+            self.assertFalse(ui.faceSettingsDock.isAncestorOf(control))
+        self.assertEqual(ui.compareFacesButton.text(), "Compare Face Embeddings")
+        self.window.addDockWidget(Qt.DockWidgetArea.TopDockWidgetArea, dock)
+        self.assertEqual(self.window.dockWidgetArea(dock), Qt.DockWidgetArea.TopDockWidgetArea)
+        dock.setFloating(True)
+        self.app.processEvents()
+        self.assertTrue(dock.isFloating())
+        self.assertTrue(ui.compareFacesButton.isVisible())
 
     def test_saved_files_dock_and_output_folder_picker(self):
         ui = self.window.ui

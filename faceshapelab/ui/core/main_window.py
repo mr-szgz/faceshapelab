@@ -101,7 +101,9 @@ class Ui_MainWindow(object):
 
         self.leftControls = QGroupBox(self.leftPanel)
         self.leftControls.setObjectName(u"leftControls")
-        self.leftControlsGrid = QGridLayout(self.leftControls)
+        self.leftControlsLayout = QVBoxLayout(self.leftControls)
+        self.leftControlsLayout.setObjectName(u"leftControlsLayout")
+        self.leftControlsGrid = QGridLayout()
         self.leftControlsGrid.setObjectName(u"leftControlsGrid")
         self.leftDetectFacesButton = QPushButton(self.leftControls)
         self.leftDetectFacesButton.setObjectName(u"leftDetectFacesButton")
@@ -123,10 +125,23 @@ class Ui_MainWindow(object):
 
         self.leftControlsGrid.addWidget(self.leftSaveCroppedFaceButton, 1, 1, 1, 1)
 
+
+        self.leftControlsLayout.addLayout(self.leftControlsGrid)
+
+        self.leftDetectedFacesLayout = QFormLayout()
+        self.leftDetectedFacesLayout.setObjectName(u"leftDetectedFacesLayout")
+        self.leftDetectedFacesLabel = QLabel(self.leftControls)
+        self.leftDetectedFacesLabel.setObjectName(u"leftDetectedFacesLabel")
+
+        self.leftDetectedFacesLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.leftDetectedFacesLabel)
+
         self.leftSelectedFaceComboBox = QComboBox(self.leftControls)
         self.leftSelectedFaceComboBox.setObjectName(u"leftSelectedFaceComboBox")
 
-        self.leftControlsGrid.addWidget(self.leftSelectedFaceComboBox, 2, 0, 1, 2)
+        self.leftDetectedFacesLayout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.leftSelectedFaceComboBox)
+
+
+        self.leftControlsLayout.addLayout(self.leftDetectedFacesLayout)
 
 
         self.leftPanelLayout.addWidget(self.leftControls)
@@ -201,7 +216,9 @@ class Ui_MainWindow(object):
 
         self.rightControls = QGroupBox(self.rightPanel)
         self.rightControls.setObjectName(u"rightControls")
-        self.rightControlsGrid = QGridLayout(self.rightControls)
+        self.rightControlsLayout = QVBoxLayout(self.rightControls)
+        self.rightControlsLayout.setObjectName(u"rightControlsLayout")
+        self.rightControlsGrid = QGridLayout()
         self.rightControlsGrid.setObjectName(u"rightControlsGrid")
         self.rightDetectFacesButton = QPushButton(self.rightControls)
         self.rightDetectFacesButton.setObjectName(u"rightDetectFacesButton")
@@ -223,10 +240,23 @@ class Ui_MainWindow(object):
 
         self.rightControlsGrid.addWidget(self.rightSaveCroppedFaceButton, 1, 1, 1, 1)
 
+
+        self.rightControlsLayout.addLayout(self.rightControlsGrid)
+
+        self.rightDetectedFacesLayout = QFormLayout()
+        self.rightDetectedFacesLayout.setObjectName(u"rightDetectedFacesLayout")
+        self.rightDetectedFacesLabel = QLabel(self.rightControls)
+        self.rightDetectedFacesLabel.setObjectName(u"rightDetectedFacesLabel")
+
+        self.rightDetectedFacesLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.rightDetectedFacesLabel)
+
         self.rightSelectedFaceComboBox = QComboBox(self.rightControls)
         self.rightSelectedFaceComboBox.setObjectName(u"rightSelectedFaceComboBox")
 
-        self.rightControlsGrid.addWidget(self.rightSelectedFaceComboBox, 2, 0, 1, 2)
+        self.rightDetectedFacesLayout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.rightSelectedFaceComboBox)
+
+
+        self.rightControlsLayout.addLayout(self.rightDetectedFacesLayout)
 
 
         self.rightPanelLayout.addWidget(self.rightControls)
@@ -417,23 +447,6 @@ class Ui_MainWindow(object):
 
         self.detectorsFormLayout.setWidget(4, QFormLayout.ItemRole.FieldRole, self.landmarkDetectScoreSlider)
 
-        self.showLandmarksCheckBox = QCheckBox(self.detectorsGroup)
-        self.showLandmarksCheckBox.setObjectName(u"showLandmarksCheckBox")
-        self.showLandmarksCheckBox.setChecked(False)
-
-        self.detectorsFormLayout.setWidget(5, QFormLayout.ItemRole.SpanningRole, self.showLandmarksCheckBox)
-
-        self.showBoundingBoxesCheckBox = QCheckBox(self.detectorsGroup)
-        self.showBoundingBoxesCheckBox.setObjectName(u"showBoundingBoxesCheckBox")
-        self.showBoundingBoxesCheckBox.setChecked(False)
-
-        self.detectorsFormLayout.setWidget(6, QFormLayout.ItemRole.SpanningRole, self.showBoundingBoxesCheckBox)
-
-        self.compareFacesButton = QPushButton(self.detectorsGroup)
-        self.compareFacesButton.setObjectName(u"compareFacesButton")
-
-        self.detectorsFormLayout.setWidget(7, QFormLayout.ItemRole.SpanningRole, self.compareFacesButton)
-
 
         self.faceSettingsLayout.addWidget(self.detectorsGroup)
 
@@ -443,7 +456,34 @@ class Ui_MainWindow(object):
 
         self.faceSettingsDock.setWidget(self.faceSettingsContents)
         MainWindow.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.faceSettingsDock)
+        self.compareFacesDock = QDockWidget(MainWindow)
+        self.compareFacesDock.setObjectName(u"compareFacesDock")
+        self.compareFacesContents = QWidget()
+        self.compareFacesContents.setObjectName(u"compareFacesContents")
+        self.compareFacesLayout = QHBoxLayout(self.compareFacesContents)
+        self.compareFacesLayout.setObjectName(u"compareFacesLayout")
+        self.showLandmarksCheckBox = QCheckBox(self.compareFacesContents)
+        self.showLandmarksCheckBox.setObjectName(u"showLandmarksCheckBox")
+        self.showLandmarksCheckBox.setChecked(False)
+
+        self.compareFacesLayout.addWidget(self.showLandmarksCheckBox)
+
+        self.showBoundingBoxesCheckBox = QCheckBox(self.compareFacesContents)
+        self.showBoundingBoxesCheckBox.setObjectName(u"showBoundingBoxesCheckBox")
+        self.showBoundingBoxesCheckBox.setChecked(False)
+
+        self.compareFacesLayout.addWidget(self.showBoundingBoxesCheckBox)
+
+        self.compareFacesButton = QPushButton(self.compareFacesContents)
+        self.compareFacesButton.setObjectName(u"compareFacesButton")
+
+        self.compareFacesLayout.addWidget(self.compareFacesButton)
+
+        self.compareFacesDock.setWidget(self.compareFacesContents)
+        MainWindow.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.compareFacesDock)
 #if QT_CONFIG(shortcut)
+        self.leftDetectedFacesLabel.setBuddy(self.leftSelectedFaceComboBox)
+        self.rightDetectedFacesLabel.setBuddy(self.rightSelectedFaceComboBox)
         self.outputFolderLabel.setBuddy(self.outputFolderPath)
         self.recognitionModelLabel.setBuddy(self.recognitionModelComboBox)
         self.faceDetectModelLabel.setBuddy(self.faceDetectModelComboBox)
@@ -511,6 +551,7 @@ class Ui_MainWindow(object):
         self.leftDetectLandmarksButton.setText(QCoreApplication.translate("MainWindow", u"Detect Landmarks", None))
         self.leftSaveFaceButton.setText(QCoreApplication.translate("MainWindow", u"Save Face", None))
         self.leftSaveCroppedFaceButton.setText(QCoreApplication.translate("MainWindow", u"Save Cropped Face", None))
+        self.leftDetectedFacesLabel.setText(QCoreApplication.translate("MainWindow", u"Detected Faces", None))
 #if QT_CONFIG(accessibility)
         self.leftSelectedFaceComboBox.setAccessibleName(QCoreApplication.translate("MainWindow", u"Selected face", None))
 #endif // QT_CONFIG(accessibility)
@@ -562,6 +603,7 @@ class Ui_MainWindow(object):
         self.rightDetectLandmarksButton.setText(QCoreApplication.translate("MainWindow", u"Detect Landmarks", None))
         self.rightSaveFaceButton.setText(QCoreApplication.translate("MainWindow", u"Save Face", None))
         self.rightSaveCroppedFaceButton.setText(QCoreApplication.translate("MainWindow", u"Save Cropped Face", None))
+        self.rightDetectedFacesLabel.setText(QCoreApplication.translate("MainWindow", u"Detected Faces", None))
 #if QT_CONFIG(accessibility)
         self.rightSelectedFaceComboBox.setAccessibleName(QCoreApplication.translate("MainWindow", u"Selected face", None))
 #endif // QT_CONFIG(accessibility)
@@ -635,8 +677,9 @@ class Ui_MainWindow(object):
 #if QT_CONFIG(accessibility)
         self.landmarkDetectScoreSlider.setAccessibleName(QCoreApplication.translate("MainWindow", u"Landmark Detect Score", None))
 #endif // QT_CONFIG(accessibility)
+        self.compareFacesDock.setWindowTitle(QCoreApplication.translate("MainWindow", u"Compare Faces", None))
         self.showLandmarksCheckBox.setText(QCoreApplication.translate("MainWindow", u"Show Landmarks", None))
         self.showBoundingBoxesCheckBox.setText(QCoreApplication.translate("MainWindow", u"Show Bounding Boxes", None))
-        self.compareFacesButton.setText(QCoreApplication.translate("MainWindow", u"Compare Selected Faces", None))
+        self.compareFacesButton.setText(QCoreApplication.translate("MainWindow", u"Compare Face Embeddings", None))
     # retranslateUi
 

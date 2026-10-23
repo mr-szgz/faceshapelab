@@ -9,7 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added a movable Compare Faces dock, initially at the bottom, containing the landmark and bounding-box visibility controls and the renamed Compare Face Embeddings button.
 - Added expandable Windows folder shortcuts to the Browse files tree, including cross-drive targets, independent shortcut branches, and dragging target files into the comparison panels.
+
+### Changed
+
+- Labeled both face selectors Detected Faces and placed them beside their labels below the Controls button grids.
 
 ## [0.2.0] - 2026-10-23
 
