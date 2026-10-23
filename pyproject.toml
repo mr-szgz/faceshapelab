@@ -4,6 +4,14 @@ version = "0.1.0"
 description = "Two-panel Qt layout for face photo comparison"
 requires-python = ">=3.12"
 dependencies = [
+    "numpy>=2.2",
+    "onnxruntime-gpu==1.26.0",
+    "opencv-python>=4.11",
+    "scikit-image>=0.26",
+    "kornia>=0.8",
+    "torch==2.10.0",
+    "torchvision==0.25.0",
+    "requests>=2.32",
     "av>=19.0.2",
     "pillow>=13.0.0",
     "platformdirs>=4.13.5",
@@ -16,3 +24,19 @@ faceshapelab = "faceshapelab.main:main"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.11", "onnx>=1.17"]
+
+[[tool.uv.index]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch" }
+torchvision = { index = "pytorch" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["models: real model inference on CUDA (requires downloaded assets)"]

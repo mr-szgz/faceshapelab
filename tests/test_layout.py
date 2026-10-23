@@ -19,7 +19,7 @@ from faceshapelab.main import MainWindow
 class LayoutTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.app = QApplication([])
+        cls.app = QApplication.instance() or QApplication([])
 
     def setUp(self):
         self.settings_folder = tempfile.TemporaryDirectory()
@@ -116,7 +116,7 @@ class LayoutTests(unittest.TestCase):
         self.assertTrue(self.window.statusBar().isVisible())
         for grid in (ui.leftControlsGrid, ui.rightControlsGrid):
             self.assertIsInstance(grid, QGridLayout)
-            self.assertEqual(grid.count(), 4)
+            self.assertEqual(grid.count(), 5)
             self.assertEqual(grid.itemAtPosition(0, 0).widget().text(), "Detect Faces")
             self.assertEqual(grid.itemAtPosition(0, 1).widget().text(), "Detect Landmarks")
             self.assertEqual(grid.itemAtPosition(1, 0).widget().text(), "Save Face")

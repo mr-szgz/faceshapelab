@@ -177,6 +177,12 @@
             </property>
            </widget>
           </item>
+          <item row="2" column="0" colspan="2">
+           <widget class="QComboBox" name="leftSelectedFaceComboBox">
+            <property name="accessibleName"><string>Selected face</string></property>
+            <property name="placeholderText"><string>No detected faces</string></property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -343,6 +349,12 @@
             <property name="text">
              <string>Save Cropped Face</string>
             </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="2">
+           <widget class="QComboBox" name="rightSelectedFaceComboBox">
+            <property name="accessibleName"><string>Selected face</string></property>
+            <property name="placeholderText"><string>No detected faces</string></property>
            </widget>
           </item>
          </layout>
@@ -589,16 +601,6 @@
             <string>Yunet</string>
            </property>
           </item>
-          <item>
-           <property name="text">
-            <string>Yolov11 VR180</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Yolov12 VR180</string>
-           </property>
-          </item>
          </widget>
         </item>
         <item row="2" column="0">
@@ -701,6 +703,7 @@
             <string>orformer98</string>
            </property>
           </item>
+          <item><property name="text"><string>hrffa</string></property></item>
          </widget>
         </item>
         <item row="4" column="0">
@@ -755,6 +758,7 @@
           </property>
          </widget>
         </item>
+        <item row="7" column="0" colspan="2"><widget class="QPushButton" name="compareFacesButton"><property name="text"><string>Compare Selected Faces</string></property></widget></item>
        </layout>
       </widget>
      </item>

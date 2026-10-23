@@ -8,3 +8,9 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Downloaded models and local verification artifacts
+model_assets/
+.work/
+.pytest_cache/
+.ruff_cache/
