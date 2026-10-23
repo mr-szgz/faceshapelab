@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Changed face bounding boxes to red and landmarks to yellow, with thicker overlays for the selected face.
 - Updated the Designer layout and synchronized the generated Python UI.
 
 ### Removed

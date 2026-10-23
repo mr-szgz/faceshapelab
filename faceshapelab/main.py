@@ -491,13 +491,11 @@ class MainWindow(QMainWindow):
                 for index, (box, points) in enumerate(
                     zip(detection.boxes, detection.points5)
                 ):
-                    color = (
-                        self.palette().highlight().color()
-                        if index == selected
-                        else self.palette().text().color()
-                    )
-                    painter.setPen(QPen(color, max(1.0, pixmap.width() / 400)))
+                    width = max(1.0, pixmap.width() / 400)
+                    if index == selected:
+                        width *= 1.5
                     if self.ui.showBoundingBoxesCheckBox.isChecked():
+                        painter.setPen(QPen(Qt.GlobalColor.red, width))
                         painter.drawRect(
                             QRectF(
                                 float(box[0]),
@@ -510,6 +508,7 @@ class MainWindow(QMainWindow):
                             QPointF(float(box[0]), float(box[1]) - 4), str(index + 1)
                         )
                     if self.ui.showLandmarksCheckBox.isChecked():
+                        painter.setPen(QPen(Qt.GlobalColor.yellow, width))
                         if landmarks:
                             if landmarks[index] is None:
                                 continue
