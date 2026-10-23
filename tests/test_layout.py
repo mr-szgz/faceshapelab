@@ -403,13 +403,18 @@ class LayoutTests(unittest.TestCase):
                 play.click()
                 self.assertEqual(player.playbackState(), QMediaPlayer.PlaybackState.PausedState)
                 position = player.position()
-                image_key = self.window.image_pixmaps[self.window.panel_images[panel]].cacheKey()
+                sink = self.window.video_sinks[panel]
                 self.assertTrue(self.drop_urls(panel, [QUrl.fromLocalFile(str(bad))]))
                 self.wait_for_media(panel)
                 self.assertIn("Warning: Cannot load broken.mp4", self.window.statusBar().currentMessage())
                 self.assertIs(self.window.media_players[panel], player)
                 self.assertEqual(player.position(), position)
-                self.assertEqual(self.window.image_pixmaps[self.window.panel_images[panel]].cacheKey(), image_key)
+                # A queued frame can still arrive after pause. The rejected drop
+                # must preserve the original sink and display its current frame.
+                self.assertIs(self.window.video_sinks[panel], sink)
+                displayed = self.window.image_pixmaps[self.window.panel_images[panel]].toImage()
+                frame = sink.videoFrame().toImage()
+                self.assertEqual(displayed.convertToFormat(frame.format()), frame)
                 self.assertTrue(self.drop_urls(panel, [QUrl.fromLocalFile(str(still))]))
                 self.assertEqual(time.text(), "Frame 1 / 1")
                 self.assertFalse(play.isEnabled())

@@ -9,12 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added landmark region mappings for all eleven models and persistent per-region annotation colors.
+- Added Procrustes shape comparison between corresponding landmark arrays and automatic region comparisons for the selected faces.
+- Added sortable region and embedding similarity tables with percentage displays to two decimal places and `-1` for unavailable region scores.
 - Added a movable Compare Faces dock, initially at the bottom, containing the landmark and bounding-box visibility controls and the renamed Compare Face Embeddings button.
 - Added expandable Windows folder shortcuts to the Browse files tree, including cross-drive targets, independent shortcut branches, and dragging target files into the comparison panels.
 
 ### Changed
 
+- Stacked comparison controls above the embedding and region tables and moved embedding scores out of the status bar.
 - Labeled both face selectors Detected Faces and placed them beside their labels below the Controls button grids.
+
+### Fixed
+
+- Cleared outdated comparison scores when selected faces or media changed and excluded landmark results from a different selected model.
+- Corrected the video-drop regression test to account for queued frames arriving after playback paused.
 
 ## [0.2.0] - 2026-10-23
 

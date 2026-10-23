@@ -17,21 +17,60 @@ from PySide6.QtCore import (
     QUrl,
     Slot,
 )
-from PySide6.QtGui import QImage, QImageReader, QPainter, QPen, QPixmap, QTransform
+from PySide6.QtGui import (
+    QColor,
+    QImage,
+    QImageReader,
+    QPainter,
+    QPen,
+    QPixmap,
+    QTransform,
+)
 from PySide6.QtMultimedia import QMediaPlayer, QVideoSink
 from PySide6.QtWidgets import (
     QApplication,
+    QComboBox,
     QFileDialog,
+    QFormLayout,
+    QHeaderView,
     QLabel,
     QMainWindow,
+    QScrollArea,
+    QStyledItemDelegate,
+    QTableWidgetItem,
     QVBoxLayout,
     QWidget,
 )
 
 from faceshapelab.analysis_worker import AnalysisWorker, image_array
+from faceshapelab.face_analysis.comparison import landmark_distance
+from faceshapelab.face_analysis.regions import LANDMARK_REGIONS, REGION_LABELS
 from faceshapelab.files_tree import FilesTreeModel
 from faceshapelab.thumbnails import ThumbnailWorker
 from faceshapelab.ui.core.main_window import Ui_MainWindow
+
+DEFAULT_LANDMARK_COLOR = "yellow"
+LANDMARK_COLORS = (
+    "yellow",
+    "orange",
+    "red",
+    "pink",
+    "purple",
+    "blue",
+    "cyan",
+    "green",
+    "lime",
+    "magenta",
+    "white",
+    "black",
+    "gray",
+    "brown",
+)
+
+
+class SimilarityDelegate(QStyledItemDelegate):
+    def displayText(self, value, locale):
+        return "-1" if value == -1 else f"{value * 100:.2f}%"
 
 
 class MainWindow(QMainWindow):
@@ -193,10 +232,88 @@ class MainWindow(QMainWindow):
             selection.currentIndexChanged.connect(
                 lambda index, p=panel: self.scale_image(self.panel_images[p])
             )
+        for controls in self.analysis_controls.values():
+            controls[4].currentIndexChanged.connect(self.clear_embedding_comparison)
+        for table in (
+            self.ui.embeddingComparisonTable,
+            self.ui.landmarkComparisonTable,
+        ):
+            table.setItemDelegateForColumn(1, SimilarityDelegate(table))
+            table.horizontalHeader().setSectionResizeMode(
+                0, QHeaderView.ResizeMode.ResizeToContents
+            )
+            table.sortItems(0, Qt.SortOrder.AscendingOrder)
+            table.setSortingEnabled(True)
         self.ui.compareFacesButton.clicked.connect(self.compare_faces)
         self.ui.showLandmarksCheckBox.toggled.connect(self.redraw_analysis)
         self.ui.showBoundingBoxesCheckBox.toggled.connect(self.redraw_analysis)
+        self.landmark_colors = {
+            model: {
+                region: self.settings.value(
+                    f"landmarkColors/{model}/{region}", DEFAULT_LANDMARK_COLOR, type=str
+                )
+                for region in regions
+            }
+            for model, regions in LANDMARK_REGIONS.items()
+        }
+        self.landmark_color_controls = {}
+        self.ui.landmarkColorsWidget = QWidget(self.ui.detectorsGroup)
+        self.ui.landmarkColorsWidget.setObjectName("landmarkColorsWidget")
+        self.ui.landmarkColorsLayout = QFormLayout(self.ui.landmarkColorsWidget)
+        self.ui.landmarkColorsLayout.setContentsMargins(0, 0, 0, 0)
+        self.ui.detectorsFormLayout.setRowWrapPolicy(
+            QFormLayout.RowWrapPolicy.WrapAllRows
+        )
+        for control in (
+            self.ui.recognitionModelComboBox,
+            self.ui.faceDetectModelComboBox,
+            self.ui.landmarkDetectModelComboBox,
+        ):
+            control.setMinimumWidth(control.sizeHint().width())
+        self.ui.detectorsFormLayout.insertRow(4, self.ui.landmarkColorsWidget)
+        self.ui.landmarkDetectModelComboBox.currentTextChanged.connect(
+            self.update_landmark_color_controls
+        )
+        self.update_landmark_color_controls()
+        self.ui.landmarkDetectModelComboBox.currentTextChanged.connect(
+            self.update_landmark_comparison
+        )
+        self.ui.faceSettingsScrollArea = QScrollArea(self.ui.faceSettingsDock)
+        self.ui.faceSettingsScrollArea.setObjectName("faceSettingsScrollArea")
+        self.ui.faceSettingsScrollArea.setWidgetResizable(True)
+        self.ui.faceSettingsScrollArea.setFrameShape(QScrollArea.Shape.NoFrame)
+        self.ui.faceSettingsScrollArea.setWidget(self.ui.faceSettingsContents)
+        self.ui.faceSettingsScrollArea.setMinimumWidth(
+            self.ui.faceSettingsContents.minimumSizeHint().width()
+            + self.ui.faceSettingsScrollArea.verticalScrollBar().sizeHint().width()
+        )
+        self.ui.faceSettingsDock.setWidget(self.ui.faceSettingsScrollArea)
         self.update_analysis_controls()
+
+    def update_landmark_color_controls(self):
+        layout = self.ui.landmarkColorsLayout
+        while layout.rowCount():
+            layout.removeRow(0)
+        self.landmark_color_controls.clear()
+        model = self.ui.landmarkDetectModelComboBox.currentText()
+        for region in LANDMARK_REGIONS[model]:
+            control = QComboBox(self.ui.landmarkColorsWidget)
+            control.setObjectName(f"landmarkColor_{model}_{region}")
+            label = REGION_LABELS[region]
+            control.setAccessibleName(label + " color")
+            control.setToolTip(f"{model} landmarks: {REGION_LABELS[region].lower()}")
+            control.addItems(LANDMARK_COLORS)
+            control.setCurrentText(self.landmark_colors[model][region])
+            control.currentTextChanged.connect(
+                lambda color, m=model, r=region: self.set_landmark_color(m, r, color)
+            )
+            layout.addRow(label, control)
+            self.landmark_color_controls[region] = control
+
+    def set_landmark_color(self, model, region, color):
+        self.landmark_colors[model][region] = color
+        self.settings.setValue(f"landmarkColors/{model}/{region}", color)
+        self.redraw_analysis()
 
     def set_folder(self, folder):
         self.ui.folderPath.setText(folder)
@@ -536,15 +653,22 @@ class MainWindow(QMainWindow):
                             QPointF(float(box[0]), float(box[1]) - 4), str(index + 1)
                         )
                     if self.ui.showLandmarksCheckBox.isChecked():
-                        painter.setPen(QPen(Qt.GlobalColor.yellow, width))
+                        model = "5"
                         if landmarks:
                             if landmarks[index] is None:
                                 continue
                             points = landmarks[index].points
-                        for x, y in points:
-                            painter.drawPoint(QPointF(float(x), float(y)))
+                            model = landmarks[index].model
+                        for region, indices in LANDMARK_REGIONS[model].items():
+                            painter.setPen(
+                                QPen(QColor(self.landmark_colors[model][region]), width)
+                            )
+                            for point_index in indices:
+                                x, y = points[point_index]
+                                painter.drawPoint(QPointF(float(x), float(y)))
                 painter.end()
             else:
+                self.clear_embedding_comparison()
                 del self.face_results[panel]
                 del self.face_previews[panel]
                 del self.face_preview_matrices[panel]
@@ -598,6 +722,42 @@ class MainWindow(QMainWindow):
                 controls[3].isEnabled() for controls in self.analysis_controls.values()
             )
         )
+        self.update_landmark_comparison()
+
+    def clear_embedding_comparison(self):
+        self.ui.embeddingComparisonTable.setRowCount(0)
+
+    def update_landmark_comparison(self):
+        model = self.ui.landmarkDetectModelComboBox.currentText()
+        regions = LANDMARK_REGIONS[model]
+        results = []
+        for panel in (self.ui.leftPanel, self.ui.rightPanel):
+            index = self.analysis_controls[panel][4].currentIndex()
+            if panel not in self.face_results or index < 0:
+                break
+            key, _, landmarks = self.face_results[panel]
+            if (
+                key != self.image_pixmaps[self.panel_images[panel]].cacheKey()
+                or not landmarks
+                or landmarks[index] is None
+                or landmarks[index].model != model
+            ):
+                break
+            results.append(landmarks[index])
+        table = self.ui.landmarkComparisonTable
+        table.setSortingEnabled(False)
+        table.setRowCount(len(regions))
+        for row, (region, indices) in enumerate(regions.items()):
+            similarity = -1.0
+            if len(results) == 2 and len(indices) > 2:
+                similarity = 1 - landmark_distance(
+                    results[0].points[list(indices)], results[1].points[list(indices)]
+                )
+            table.setItem(row, 0, QTableWidgetItem(REGION_LABELS[region]))
+            value = QTableWidgetItem()
+            value.setData(Qt.ItemDataRole.DisplayRole, round(similarity, 4))
+            table.setItem(row, 1, value)
+        table.setSortingEnabled(True)
 
     def selected_points(self, panel):
         _, detection, landmarks = self.face_results[panel]
@@ -654,6 +814,7 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage("Image changed; analysis result discarded.")
             return
         if action in ("detect", "landmarks"):
+            self.clear_embedding_comparison()
             detection, landmarks, crops, matrices = result
             self.face_preview_matrices[panel] = matrices
             self.face_previews[panel] = [
@@ -700,9 +861,15 @@ class MainWindow(QMainWindow):
         elif action == "crop":
             self.save_pixels(result, "aligned", self.analysis_output_dir)
         elif action == "recognize":
-            self.statusBar().showMessage(
-                f"{self.analysis_worker.recognizer} similarity: {result:.2f} / 100"
-            )
+            table = self.ui.embeddingComparisonTable
+            table.setSortingEnabled(False)
+            table.setRowCount(1)
+            table.setItem(0, 0, QTableWidgetItem(self.analysis_worker.recognizer))
+            value = QTableWidgetItem()
+            value.setData(Qt.ItemDataRole.DisplayRole, round(result / 100, 4))
+            table.setItem(0, 1, value)
+            table.setSortingEnabled(True)
+            self.statusBar().clearMessage()
 
     @Slot()
     def analysis_finished(self):

@@ -108,7 +108,7 @@ def test_real_buttons_detect_landmark_save_compare(window, tmp_path):
         )
     window.ui.compareFacesButton.click()
     wait_idle(window)
-    assert "100.00 / 100" in window.statusBar().currentMessage()
+    assert window.ui.embeddingComparisonTable.item(0, 1).data(Qt.ItemDataRole.DisplayRole) == pytest.approx(1)
 
 
 @pytest.mark.models
@@ -327,7 +327,7 @@ def test_auto_preview_selects_accepted_face_and_clears_rejected_selection(window
     window.analysis_completed(
         (
             detection,
-            [None, SimpleNamespace(points=points, points5=points)],
+            [None, SimpleNamespace(points=points, points5=points, model="5")],
             [None, np.full((512, 512, 3), 80, dtype=np.uint8)],
             [None, np.array([[1, 0, 0], [0, 1, 0]])],
         )

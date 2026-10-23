@@ -33,6 +33,7 @@ HEAD_MODEL = "deimv2_hgnetv2_n_wholebody49_boxes_only_webgpu.onnx"
 class LandmarkResult:
     points5: np.ndarray
     points: np.ndarray
+    model: str
     confidence: np.ndarray | None = None
     visibility: np.ndarray | None = None
     blendshapes: np.ndarray | None = None
@@ -236,6 +237,7 @@ class LandmarkDetector:
         return LandmarkResult(
             points5.astype(np.float32),
             points.astype(np.float32),
+            self.mode,
             confidence,
             visibility,
             blendshapes,

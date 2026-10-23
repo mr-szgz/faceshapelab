@@ -21,7 +21,8 @@ from PySide6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QComb
     QHBoxLayout, QHeaderView, QLabel, QLineEdit,
     QMainWindow, QMenu, QMenuBar, QPushButton,
     QScrollArea, QSizePolicy, QSlider, QSpacerItem,
-    QStatusBar, QTreeView, QVBoxLayout, QWidget)
+    QStatusBar, QTableWidget, QTableWidgetItem, QTreeView,
+    QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -460,7 +461,7 @@ class Ui_MainWindow(object):
         self.compareFacesDock.setObjectName(u"compareFacesDock")
         self.compareFacesContents = QWidget()
         self.compareFacesContents.setObjectName(u"compareFacesContents")
-        self.compareFacesLayout = QHBoxLayout(self.compareFacesContents)
+        self.compareFacesLayout = QVBoxLayout(self.compareFacesContents)
         self.compareFacesLayout.setObjectName(u"compareFacesLayout")
         self.showLandmarksCheckBox = QCheckBox(self.compareFacesContents)
         self.showLandmarksCheckBox.setObjectName(u"showLandmarksCheckBox")
@@ -478,6 +479,42 @@ class Ui_MainWindow(object):
         self.compareFacesButton.setObjectName(u"compareFacesButton")
 
         self.compareFacesLayout.addWidget(self.compareFacesButton)
+
+        self.embeddingComparisonTable = QTableWidget(self.compareFacesContents)
+        if (self.embeddingComparisonTable.columnCount() < 2):
+            self.embeddingComparisonTable.setColumnCount(2)
+        __qtablewidgetitem = QTableWidgetItem()
+        self.embeddingComparisonTable.setHorizontalHeaderItem(0, __qtablewidgetitem)
+        __qtablewidgetitem1 = QTableWidgetItem()
+        self.embeddingComparisonTable.setHorizontalHeaderItem(1, __qtablewidgetitem1)
+        self.embeddingComparisonTable.setObjectName(u"embeddingComparisonTable")
+        self.embeddingComparisonTable.setMaximumSize(QSize(16777215, 70))
+        self.embeddingComparisonTable.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.embeddingComparisonTable.horizontalHeader().setStretchLastSection(True)
+        self.embeddingComparisonTable.verticalHeader().setVisible(False)
+
+        self.compareFacesLayout.addWidget(self.embeddingComparisonTable)
+
+        self.landmarkComparisonLayout = QVBoxLayout()
+        self.landmarkComparisonLayout.setObjectName(u"landmarkComparisonLayout")
+        self.landmarkComparisonTable = QTableWidget(self.compareFacesContents)
+        if (self.landmarkComparisonTable.columnCount() < 2):
+            self.landmarkComparisonTable.setColumnCount(2)
+        __qtablewidgetitem2 = QTableWidgetItem()
+        self.landmarkComparisonTable.setHorizontalHeaderItem(0, __qtablewidgetitem2)
+        __qtablewidgetitem3 = QTableWidgetItem()
+        self.landmarkComparisonTable.setHorizontalHeaderItem(1, __qtablewidgetitem3)
+        self.landmarkComparisonTable.setObjectName(u"landmarkComparisonTable")
+        self.landmarkComparisonTable.setMinimumSize(QSize(260, 100))
+        self.landmarkComparisonTable.setMaximumSize(QSize(16777215, 180))
+        self.landmarkComparisonTable.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.landmarkComparisonTable.horizontalHeader().setStretchLastSection(True)
+        self.landmarkComparisonTable.verticalHeader().setVisible(False)
+
+        self.landmarkComparisonLayout.addWidget(self.landmarkComparisonTable)
+
+
+        self.compareFacesLayout.addLayout(self.landmarkComparisonLayout)
 
         self.compareFacesDock.setWidget(self.compareFacesContents)
         MainWindow.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.compareFacesDock)
@@ -681,5 +718,22 @@ class Ui_MainWindow(object):
         self.showLandmarksCheckBox.setText(QCoreApplication.translate("MainWindow", u"Show Landmarks", None))
         self.showBoundingBoxesCheckBox.setText(QCoreApplication.translate("MainWindow", u"Show Bounding Boxes", None))
         self.compareFacesButton.setText(QCoreApplication.translate("MainWindow", u"Compare Face Embeddings", None))
+        ___qtablewidgetitem = self.embeddingComparisonTable.horizontalHeaderItem(0)
+        ___qtablewidgetitem.setText(QCoreApplication.translate("MainWindow", u"Embedding model", None))
+        ___qtablewidgetitem1 = self.embeddingComparisonTable.horizontalHeaderItem(1)
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("MainWindow", u"Similarity", None))
+#if QT_CONFIG(accessibility)
+        self.embeddingComparisonTable.setAccessibleName(QCoreApplication.translate("MainWindow", u"Embedding similarities", None))
+#endif // QT_CONFIG(accessibility)
+        ___qtablewidgetitem2 = self.landmarkComparisonTable.horizontalHeaderItem(0)
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("MainWindow", u"Region", None))
+        ___qtablewidgetitem3 = self.landmarkComparisonTable.horizontalHeaderItem(1)
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("MainWindow", u"Similarity", None))
+#if QT_CONFIG(accessibility)
+        self.landmarkComparisonTable.setAccessibleName(QCoreApplication.translate("MainWindow", u"Landmark region similarities", None))
+#endif // QT_CONFIG(accessibility)
+#if QT_CONFIG(tooltip)
+        self.landmarkComparisonTable.setToolTip(QCoreApplication.translate("MainWindow", u"Shape similarity from 0 to 1; higher is closer.", None))
+#endif // QT_CONFIG(tooltip)
     # retranslateUi
 
