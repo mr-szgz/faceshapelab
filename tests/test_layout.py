@@ -4,10 +4,12 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from PySide6.QtCore import QFile, QIODevice, QPointF, QUrl, Qt
+import av
+from PIL import Image
+from PySide6.QtCore import QFile, QIODevice, QMimeData, QPointF, QSettings, QUrl, Qt
 from PySide6.QtDesigner import QFormBuilder
 from PySide6.QtGui import QDragEnterEvent, QDropEvent, QPixmap
-from PySide6.QtMultimedia import QVideoFrame
+from PySide6.QtMultimedia import QMediaPlayer, QVideoFrame
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QApplication, QGridLayout
 
@@ -20,12 +22,81 @@ class LayoutTests(unittest.TestCase):
         cls.app = QApplication([])
 
     def setUp(self):
+        self.settings_folder = tempfile.TemporaryDirectory()
+        self.addCleanup(self.settings_folder.cleanup)
+        settings = QSettings(str(Path(self.settings_folder.name, "settings.ini")), QSettings.Format.IniFormat)
+        self.settings_patch = patch("faceshapelab.main.QSettings", return_value=settings)
+        self.settings_patch.start()
+        self.addCleanup(self.settings_patch.stop)
+        self.cache_patch = patch("faceshapelab.thumbnails.user_cache_path", return_value=Path(self.settings_folder.name, "cache"))
+        self.cache_patch.start()
+        self.addCleanup(self.cache_patch.stop)
         self.window = MainWindow()
         self.window.show()
         self.app.processEvents()
 
     def tearDown(self):
         self.window.close()
+
+    def wait_for_outputs(self):
+        for _ in range(500):
+            self.app.processEvents()
+            if self.window.ui.refreshOutputsButton.isEnabled():
+                return
+            QTest.qWait(10)
+        self.fail("Output generation did not complete")
+
+    def test_output_thumbnails_cache_refresh_and_video(self):
+        self.wait_for_outputs()
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            Image.new("RGB", (400, 200), "red").save(root / "photo.png")
+            (root / "notes.txt").write_text("Not media", encoding="utf-8")
+            with av.open(str(root / "clip.mp4"), "w") as container:
+                stream = container.add_stream("mpeg4", rate=24)
+                stream.width = 64
+                stream.height = 64
+                stream.pix_fmt = "yuv420p"
+                frame = av.VideoFrame.from_image(Image.new("RGB", (64, 64), "blue"))
+                for packet in stream.encode(frame):
+                    container.mux(packet)
+                for packet in stream.encode():
+                    container.mux(packet)
+            self.window.ui.outputFolderPath.setText(folder)
+            self.window.ui.refreshOutputsButton.click()
+            self.wait_for_outputs()
+            grid = self.window.ui.outputThumbnailsGrid
+            self.assertEqual(grid.count(), 2)
+            self.assertEqual(grid.itemAt(1).widget().toolTip(), str(root / "photo.png"))
+            cache = Path(self.settings_folder.name, "cache", "thumbnails")
+            cached = {path.name: path.stat().st_mtime_ns for path in cache.glob("*.png")}
+            self.assertEqual(len(cached), 2)
+            self.window.ui.refreshOutputsButton.click()
+            self.wait_for_outputs()
+            self.assertEqual(cached, {path.name: path.stat().st_mtime_ns for path in cache.glob("*.png")})
+            Image.new("RGB", (200, 400), "green").save(root / "photo.png")
+            (root / "clip.mp4").unlink()
+            self.window.ui.refreshOutputsButton.click()
+            self.wait_for_outputs()
+            self.assertEqual(grid.count(), 1)
+            self.assertEqual(len(list(cache.glob("*.png"))), 3)
+            self.window.ui.outputFolderPath.setText(str(Path.cwd()))
+
+    def test_settings_restore_on_new_window(self):
+        self.wait_for_outputs()
+        self.window.ui.outputFolderPath.setText(self.settings_folder.name)
+        self.window.ui.detectScoreSlider.setValue(73)
+        self.window.ui.landmarkDetectModelComboBox.setCurrentIndex(3)
+        self.window.ui.showLandmarksCheckBox.setChecked(True)
+        self.window.close()
+        settings = QSettings(str(Path(self.settings_folder.name, "settings.ini")), QSettings.Format.IniFormat)
+        with patch("faceshapelab.main.QSettings", return_value=settings):
+            self.window = MainWindow()
+        self.wait_for_outputs()
+        self.assertEqual(self.window.ui.outputFolderPath.text(), self.settings_folder.name)
+        self.assertEqual(self.window.ui.detectScoreSlider.value(), 73)
+        self.assertEqual(self.window.ui.landmarkDetectModelComboBox.currentIndex(), 3)
+        self.assertTrue(self.window.ui.showLandmarksCheckBox.isChecked())
 
     def test_generated_ui_matches_source(self):
         root = Path(__file__).resolve().parents[1]
@@ -64,8 +135,8 @@ class LayoutTests(unittest.TestCase):
                 self.assertLessEqual(abs(ui.leftPanel.width() - ui.rightPanel.width()), 1)
                 self.assertLess(ui.leftPanel.geometry().right(), ui.rightPanel.geometry().left())
                 for panel, image, playback, controls in (
-                    (ui.leftPanel, ui.leftImage, ui.leftPlaybackControls, ui.leftControls),
-                    (ui.rightPanel, ui.rightImage, ui.rightPlaybackControls, ui.rightControls),
+                    (ui.leftPanel, ui.leftImage, ui.leftPlaybackLayout, ui.leftControls),
+                    (ui.rightPanel, ui.rightImage, ui.rightPlaybackLayout, ui.rightControls),
                 ):
                     self.assertTrue(panel.rect().contains(image.geometry()))
                     self.assertTrue(panel.rect().contains(controls.geometry()))
@@ -138,6 +209,7 @@ class LayoutTests(unittest.TestCase):
             with patch("faceshapelab.main.QFileDialog.getExistingDirectory", return_value=folder):
                 ui.browseOutputFolderButton.click()
             self.assertEqual(ui.outputFolderPath.text(), folder)
+            self.wait_for_outputs()
             with patch("faceshapelab.main.QFileDialog.getExistingDirectory", return_value=""):
                 ui.browseOutputFolderButton.click()
             self.assertEqual(ui.outputFolderPath.text(), folder)
@@ -195,6 +267,199 @@ class LayoutTests(unittest.TestCase):
                 QApplication.sendEvent(self.window.ui.leftPanel, enter)
                 self.assertFalse(enter.isAccepted())
             self.assertEqual(self.window.ui.leftImage.pixmap().toImage().pixelColor(0, 0), Qt.GlobalColor.red)
+
+
+    def drop_urls(self, target, urls):
+        mime = QMimeData()
+        mime.setUrls(urls)
+        enter = QDragEnterEvent(QPointF(20, 20), Qt.DropAction.CopyAction, mime,
+                                Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
+        QApplication.sendEvent(target, enter)
+        if not enter.isAccepted():
+            return False
+        drop = QDropEvent(QPointF(20, 20), Qt.DropAction.CopyAction, mime,
+                          Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
+        QApplication.sendEvent(target, drop)
+        return drop.isAccepted()
+
+    def wait_for_media(self, panel):
+        for _ in range(500):
+            self.app.processEvents()
+            if panel not in self.window.pending_media:
+                return
+            QTest.qWait(10)
+        self.fail("Media loading did not finish")
+
+    def create_video(self, path):
+        with av.open(str(path), "w") as container:
+            stream = container.add_stream("mpeg4", rate=10)
+            stream.width = 64
+            stream.height = 64
+            stream.pix_fmt = "yuv420p"
+            for index in range(50):
+                frame = av.VideoFrame.from_image(Image.new("RGB", (64, 64), (index * 5, 0, 255)))
+                for packet in stream.encode(frame):
+                    container.mux(packet)
+            for packet in stream.encode():
+                container.mux(packet)
+
+    def test_folder_change_clears_old_selection_and_cancel_keeps_root(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            first = root / "first"
+            second = root / "second"
+            first.mkdir()
+            second.mkdir()
+            (first / "selected.txt").write_text("test")
+            self.window.set_folder(str(first))
+            self.window.ui.filesTree.setCurrentIndex(self.window.files_model.index(str(first / "selected.txt")))
+            with patch("faceshapelab.main.QFileDialog.getExistingDirectory", return_value=str(second)) as picker:
+                QTest.keyClick(self.window.ui.browseFolderButton, Qt.Key.Key_Space)
+            picker.assert_called_once_with(self.window, "Select folder", str(first))
+            tree = self.window.ui.filesTree
+            self.assertFalse(tree.currentIndex().isValid())
+            self.assertEqual(tree.selectionModel().selectedIndexes(), [])
+            self.assertEqual(Path(self.window.files_model.filePath(tree.rootIndex())), second)
+            self.assertEqual(self.window.ui.folderPath.toolTip(), str(second))
+            with patch("faceshapelab.main.QFileDialog.getExistingDirectory", return_value=""):
+                self.window.ui.browseFolderButton.click()
+            self.assertEqual(Path(self.window.files_model.filePath(tree.rootIndex())), second)
+
+    def test_rejected_drops_warn_and_preserve_both_panels(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            image = root / "image.png"
+            Image.new("RGB", (80, 40), "red").save(image)
+            text = root / "notes.txt"
+            text.write_text("not media")
+            fake = root / "fake.png"
+            fake.write_text("not a PNG")
+            for panel in self.window.panel_images:
+                self.assertTrue(self.drop_urls(panel, [QUrl.fromLocalFile(str(image))]))
+            for urls in ([QUrl.fromLocalFile(str(text))], [QUrl.fromLocalFile(str(fake))],
+                         [QUrl.fromLocalFile(folder)], [QUrl.fromLocalFile(str(root / "missing.png"))],
+                         [QUrl("https://example.com/image.png")], [],
+                         [QUrl.fromLocalFile(str(image)), QUrl.fromLocalFile(str(text))]):
+                for panel in self.window.panel_images:
+                    self.assertFalse(self.drop_urls(panel, urls))
+                    self.assertTrue(self.window.statusBar().currentMessage().startswith("Warning:"))
+                    self.assertEqual(self.window.image_pixmaps[self.window.panel_images[panel]].toImage().pixelColor(0, 0), Qt.GlobalColor.red)
+            self.assertTrue(self.drop_urls(self.window.ui.leftPanel, [QUrl.fromLocalFile(str(image))]))
+            self.assertIn("Loaded image.png into Media 1", self.window.statusBar().currentMessage())
+
+    def test_tree_video_drop_playback_replacement_and_invalid_video(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            nested = root / "nested"
+            nested.mkdir()
+            video = nested / "clip.mp4"
+            self.create_video(video)
+            bad = nested / "broken.mp4"
+            bad.write_bytes(b"not a movie")
+            still = root / "still.png"
+            Image.new("RGB", (80, 40), "red").save(still)
+            self.window.set_folder(folder)
+            tree = self.window.ui.filesTree
+            tree.expand(self.window.files_model.index(str(nested)))
+            for panel in self.window.panel_images:
+                index = self.window.files_model.index(str(video))
+                mime = self.window.files_model.mimeData([index])
+                self.assertTrue(self.drop_urls(panel, mime.urls()))
+                self.wait_for_media(panel)
+                player = self.window.media_players[panel]
+                self.assertEqual(player.source(), QUrl.fromLocalFile(str(video)))
+                self.assertEqual(player.playbackState(), QMediaPlayer.PlaybackState.PausedState)
+                slider, play, back, forward, time = self.window.playback_controls[panel]
+                self.assertTrue(slider.isEnabled())
+                slider.setValue(1000)
+                forward.click()
+                self.assertEqual(player.position(), 3000)
+                back.click()
+                self.assertEqual(player.position(), 1000)
+                play.click()
+                QTest.qWait(250)
+                self.assertGreater(player.position(), 1000)
+                play.click()
+                self.assertEqual(player.playbackState(), QMediaPlayer.PlaybackState.PausedState)
+                position = player.position()
+                image_key = self.window.image_pixmaps[self.window.panel_images[panel]].cacheKey()
+                self.assertTrue(self.drop_urls(panel, [QUrl.fromLocalFile(str(bad))]))
+                self.wait_for_media(panel)
+                self.assertIn("Warning: Cannot load broken.mp4", self.window.statusBar().currentMessage())
+                self.assertIs(self.window.media_players[panel], player)
+                self.assertEqual(player.position(), position)
+                self.assertEqual(self.window.image_pixmaps[self.window.panel_images[panel]].cacheKey(), image_key)
+                self.assertTrue(self.drop_urls(panel, [QUrl.fromLocalFile(str(still))]))
+                self.assertEqual(time.text(), "Frame 1 / 1")
+                self.assertFalse(play.isEnabled())
+                self.assertTrue(self.drop_urls(panel, [QUrl.fromLocalFile(str(video))]))
+                self.wait_for_media(panel)
+                slider.setValue(2000)
+                self.assertEqual(self.window.media_players[panel].position(), 2000)
+            self.window.close()
+
+    def test_corrupt_image_does_not_replace_current_frame(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder, "image.png")
+            Image.new("RGB", (80, 40), "red").save(path)
+            panel = self.window.ui.leftPanel
+            self.assertTrue(self.drop_urls(panel, [QUrl.fromLocalFile(str(path))]))
+            bad = Path(folder, "truncated.png")
+            bad.write_bytes(path.read_bytes()[:33])
+            self.assertFalse(self.drop_urls(panel, [QUrl.fromLocalFile(str(bad))]))
+            self.assertTrue(self.window.statusBar().currentMessage().startswith("Warning:"))
+            self.assertEqual(self.window.image_pixmaps[self.window.ui.leftImage].toImage().pixelColor(0, 0), Qt.GlobalColor.red)
+
+    def test_audio_only_mp4_is_rejected_without_replacing_image(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            image = root / "image.png"
+            Image.new("RGB", (80, 40), "red").save(image)
+            audio = root / "audio.mp4"
+            with av.open(str(audio), "w") as container:
+                stream = container.add_stream("aac", rate=48000)
+                frame = av.AudioFrame(format="fltp", layout="mono", samples=1024)
+                frame.sample_rate = 48000
+                for plane in frame.planes:
+                    plane.update(bytes(plane.buffer_size))
+                for packet in stream.encode(frame):
+                    container.mux(packet)
+                for packet in stream.encode():
+                    container.mux(packet)
+            panel = self.window.ui.leftPanel
+            self.drop_urls(panel, [QUrl.fromLocalFile(str(image))])
+            self.drop_urls(panel, [QUrl.fromLocalFile(str(audio))])
+            self.wait_for_media(panel)
+            self.assertTrue(self.window.statusBar().currentMessage().startswith("Warning:"))
+            self.assertEqual(self.window.image_pixmaps[self.window.ui.leftImage].toImage().pixelColor(0, 0), Qt.GlobalColor.red)
+
+    def test_rapid_drop_keeps_latest_media_and_close_releases_video(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            video = root / "clip.mp4"
+            self.create_video(video)
+            image = root / "image.png"
+            Image.new("RGB", (80, 40), "red").save(image)
+            panel = self.window.ui.leftPanel
+            self.drop_urls(panel, [QUrl.fromLocalFile(str(video))])
+            self.drop_urls(panel, [QUrl.fromLocalFile(str(image))])
+            QTest.qWait(100)
+            self.assertEqual(self.window.ui.leftTimeLabel.text(), "Frame 1 / 1")
+            self.assertEqual(self.window.image_pixmaps[self.window.ui.leftImage].toImage().pixelColor(0, 0), Qt.GlobalColor.red)
+            self.drop_urls(panel, [QUrl.fromLocalFile(str(video))])
+            self.drop_urls(panel, [QUrl.fromLocalFile(str(video))])
+            self.wait_for_media(panel)
+            self.assertEqual(self.window.media_players[panel].source(), QUrl.fromLocalFile(str(video)))
+            self.window.close()
+            video.rename(root / "released.mp4")
+
+    def test_drop_on_image_viewer(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder, "image.png")
+            Image.new("RGB", (80, 40), "blue").save(path)
+            for label in self.window.panel_images.values():
+                self.assertTrue(self.drop_urls(label, [QUrl.fromLocalFile(str(path))]))
+                self.assertEqual(label.pixmap().toImage().pixelColor(0, 0), Qt.GlobalColor.blue)
 
 
 if __name__ == "__main__":

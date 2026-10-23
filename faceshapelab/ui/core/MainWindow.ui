@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
+    <width>1344</width>
     <height>800</height>
    </rect>
   </property>
@@ -44,58 +44,104 @@
         </widget>
        </item>
        <item>
-        <widget class="QWidget" name="leftPlaybackControls">
-         <layout class="QVBoxLayout" name="leftPlaybackLayout">
-          <property name="leftMargin"><number>0</number></property>
-          <property name="topMargin"><number>0</number></property>
-          <property name="rightMargin"><number>0</number></property>
-          <property name="bottomMargin"><number>0</number></property>
-          <item>
-           <widget class="QSlider" name="leftTimelineSlider">
-            <property name="enabled"><bool>false</bool></property>
-            <property name="accessibleName"><string>Media 1 timeline</string></property>
-            <property name="toolTip"><string>Scrub to a frame</string></property>
-            <property name="maximum"><number>0</number></property>
-            <property name="pageStep"><number>2000</number></property>
-            <property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="leftTransportLayout">
-            <item>
-             <widget class="QPushButton" name="leftSkipBackwardButton">
-              <property name="enabled"><bool>false</bool></property>
-              <property name="text"><string>-2 s</string></property>
-              <property name="toolTip"><string>Skip backward 2 seconds</string></property>
-              <property name="accessibleName"><string>Media 1: skip backward 2 seconds</string></property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="leftPlayPauseButton">
-              <property name="enabled"><bool>false</bool></property>
-              <property name="text"><string>Play</string></property>
-              <property name="toolTip"><string>Play or pause</string></property>
-              <property name="accessibleName"><string>Media 1: play or pause</string></property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="leftSkipForwardButton">
-              <property name="enabled"><bool>false</bool></property>
-              <property name="text"><string>+2 s</string></property>
-              <property name="toolTip"><string>Skip forward 2 seconds</string></property>
-              <property name="accessibleName"><string>Media 1: skip forward 2 seconds</string></property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="leftTimeLabel">
-              <property name="text"><string>00:00 / 00:00</string></property>
-              <property name="alignment"><set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignVCenter</set></property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
+        <layout class="QVBoxLayout" name="leftPlaybackLayout">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QSlider" name="leftTimelineSlider">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="toolTip">
+            <string>Scrub to a frame</string>
+           </property>
+           <property name="accessibleName">
+            <string>Media 1 timeline</string>
+           </property>
+           <property name="maximum">
+            <number>0</number>
+           </property>
+           <property name="pageStep">
+            <number>2000</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="leftTransportLayout">
+           <item>
+            <widget class="QPushButton" name="leftSkipBackwardButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="toolTip">
+              <string>Skip backward 2 seconds</string>
+             </property>
+             <property name="accessibleName">
+              <string>Media 1: skip backward 2 seconds</string>
+             </property>
+             <property name="text">
+              <string>-2 s</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="leftPlayPauseButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="toolTip">
+              <string>Play or pause</string>
+             </property>
+             <property name="accessibleName">
+              <string>Media 1: play or pause</string>
+             </property>
+             <property name="text">
+              <string>Play</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="leftSkipForwardButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="toolTip">
+              <string>Skip forward 2 seconds</string>
+             </property>
+             <property name="accessibleName">
+              <string>Media 1: skip forward 2 seconds</string>
+             </property>
+             <property name="text">
+              <string>+2 s</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="leftTimeLabel">
+             <property name="text">
+              <string>00:00 / 00:00</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QGroupBox" name="leftControls">
@@ -105,22 +151,30 @@
          <layout class="QGridLayout" name="leftControlsGrid">
           <item row="0" column="0">
            <widget class="QPushButton" name="leftDetectFacesButton">
-            <property name="text"><string>Detect Faces</string></property>
+            <property name="text">
+             <string>Detect Faces</string>
+            </property>
            </widget>
           </item>
           <item row="0" column="1">
            <widget class="QPushButton" name="leftDetectLandmarksButton">
-            <property name="text"><string>Detect Landmarks</string></property>
+            <property name="text">
+             <string>Detect Landmarks</string>
+            </property>
            </widget>
           </item>
           <item row="1" column="0">
            <widget class="QPushButton" name="leftSaveFaceButton">
-            <property name="text"><string>Save Face</string></property>
+            <property name="text">
+             <string>Save Face</string>
+            </property>
            </widget>
           </item>
           <item row="1" column="1">
            <widget class="QPushButton" name="leftSaveCroppedFaceButton">
-            <property name="text"><string>Save Cropped Face</string></property>
+            <property name="text">
+             <string>Save Cropped Face</string>
+            </property>
            </widget>
           </item>
          </layout>
@@ -158,58 +212,104 @@
         </widget>
        </item>
        <item>
-        <widget class="QWidget" name="rightPlaybackControls">
-         <layout class="QVBoxLayout" name="rightPlaybackLayout">
-          <property name="leftMargin"><number>0</number></property>
-          <property name="topMargin"><number>0</number></property>
-          <property name="rightMargin"><number>0</number></property>
-          <property name="bottomMargin"><number>0</number></property>
-          <item>
-           <widget class="QSlider" name="rightTimelineSlider">
-            <property name="enabled"><bool>false</bool></property>
-            <property name="accessibleName"><string>Media 2 timeline</string></property>
-            <property name="toolTip"><string>Scrub to a frame</string></property>
-            <property name="maximum"><number>0</number></property>
-            <property name="pageStep"><number>2000</number></property>
-            <property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="rightTransportLayout">
-            <item>
-             <widget class="QPushButton" name="rightSkipBackwardButton">
-              <property name="enabled"><bool>false</bool></property>
-              <property name="text"><string>-2 s</string></property>
-              <property name="toolTip"><string>Skip backward 2 seconds</string></property>
-              <property name="accessibleName"><string>Media 2: skip backward 2 seconds</string></property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="rightPlayPauseButton">
-              <property name="enabled"><bool>false</bool></property>
-              <property name="text"><string>Play</string></property>
-              <property name="toolTip"><string>Play or pause</string></property>
-              <property name="accessibleName"><string>Media 2: play or pause</string></property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="rightSkipForwardButton">
-              <property name="enabled"><bool>false</bool></property>
-              <property name="text"><string>+2 s</string></property>
-              <property name="toolTip"><string>Skip forward 2 seconds</string></property>
-              <property name="accessibleName"><string>Media 2: skip forward 2 seconds</string></property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="rightTimeLabel">
-              <property name="text"><string>00:00 / 00:00</string></property>
-              <property name="alignment"><set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignVCenter</set></property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
+        <layout class="QVBoxLayout" name="rightPlaybackLayout">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QSlider" name="rightTimelineSlider">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="toolTip">
+            <string>Scrub to a frame</string>
+           </property>
+           <property name="accessibleName">
+            <string>Media 2 timeline</string>
+           </property>
+           <property name="maximum">
+            <number>0</number>
+           </property>
+           <property name="pageStep">
+            <number>2000</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="rightTransportLayout">
+           <item>
+            <widget class="QPushButton" name="rightSkipBackwardButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="toolTip">
+              <string>Skip backward 2 seconds</string>
+             </property>
+             <property name="accessibleName">
+              <string>Media 2: skip backward 2 seconds</string>
+             </property>
+             <property name="text">
+              <string>-2 s</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="rightPlayPauseButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="toolTip">
+              <string>Play or pause</string>
+             </property>
+             <property name="accessibleName">
+              <string>Media 2: play or pause</string>
+             </property>
+             <property name="text">
+              <string>Play</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="rightSkipForwardButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="toolTip">
+              <string>Skip forward 2 seconds</string>
+             </property>
+             <property name="accessibleName">
+              <string>Media 2: skip forward 2 seconds</string>
+             </property>
+             <property name="text">
+              <string>+2 s</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="rightTimeLabel">
+             <property name="text">
+              <string>00:00 / 00:00</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QGroupBox" name="rightControls">
@@ -219,22 +319,30 @@
          <layout class="QGridLayout" name="rightControlsGrid">
           <item row="0" column="0">
            <widget class="QPushButton" name="rightDetectFacesButton">
-            <property name="text"><string>Detect Faces</string></property>
+            <property name="text">
+             <string>Detect Faces</string>
+            </property>
            </widget>
           </item>
           <item row="0" column="1">
            <widget class="QPushButton" name="rightDetectLandmarksButton">
-            <property name="text"><string>Detect Landmarks</string></property>
+            <property name="text">
+             <string>Detect Landmarks</string>
+            </property>
            </widget>
           </item>
           <item row="1" column="0">
            <widget class="QPushButton" name="rightSaveFaceButton">
-            <property name="text"><string>Save Face</string></property>
+            <property name="text">
+             <string>Save Face</string>
+            </property>
            </widget>
           </item>
           <item row="1" column="1">
            <widget class="QPushButton" name="rightSaveCroppedFaceButton">
-            <property name="text"><string>Save Cropped Face</string></property>
+            <property name="text">
+             <string>Save Cropped Face</string>
+            </property>
            </widget>
           </item>
          </layout>
@@ -250,7 +358,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1200</width>
+     <width>1344</width>
      <height>33</height>
     </rect>
    </property>
@@ -334,35 +442,59 @@
     <layout class="QVBoxLayout" name="savedFilesLayout" stretch="0,0,0,1">
      <item>
       <widget class="QLabel" name="outputFolderLabel">
-       <property name="text"><string>Output Folder</string></property>
-       <property name="buddy"><cstring>outputFolderPath</cstring></property>
+       <property name="text">
+        <string>Output Folder</string>
+       </property>
+       <property name="buddy">
+        <cstring>outputFolderPath</cstring>
+       </property>
       </widget>
      </item>
      <item>
       <layout class="QHBoxLayout" name="outputFolderPickerLayout">
        <item>
         <widget class="QLineEdit" name="outputFolderPath">
-         <property name="accessibleName"><string>Output Folder</string></property>
+         <property name="accessibleName">
+          <string>Output Folder</string>
+         </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="browseOutputFolderButton">
-         <property name="toolTip"><string>Set output folder</string></property>
-         <property name="text"><string>Browse…</string></property>
+         <property name="toolTip">
+          <string>Set output folder</string>
+         </property>
+         <property name="text">
+          <string>Browse…</string>
+         </property>
         </widget>
        </item>
       </layout>
      </item>
      <item>
       <widget class="QPushButton" name="refreshOutputsButton">
-       <property name="text"><string>Refresh Outputs</string></property>
+       <property name="text">
+        <string>Refresh Outputs</string>
+       </property>
       </widget>
      </item>
      <item>
       <widget class="QScrollArea" name="outputThumbnailsScrollArea">
-       <property name="accessibleName"><string>Output thumbnails</string></property>
-       <property name="widgetResizable"><bool>true</bool></property>
+       <property name="accessibleName">
+        <string>Output thumbnails</string>
+       </property>
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
        <widget class="QWidget" name="outputThumbnailsContents">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>244</width>
+          <height>172</height>
+         </rect>
+        </property>
         <layout class="QGridLayout" name="outputThumbnailsGrid"/>
        </widget>
       </widget>
@@ -381,104 +513,246 @@
     <layout class="QVBoxLayout" name="faceSettingsLayout">
      <item>
       <widget class="QGroupBox" name="detectorsGroup">
-       <property name="title"><string>Detectors</string></property>
+       <property name="title">
+        <string>Detectors</string>
+       </property>
        <layout class="QFormLayout" name="detectorsFormLayout">
         <item row="0" column="0">
          <widget class="QLabel" name="recognitionModelLabel">
-          <property name="text"><string>Recognition Model</string></property>
-          <property name="buddy"><cstring>recognitionModelComboBox</cstring></property>
+          <property name="text">
+           <string>Recognition Model</string>
+          </property>
+          <property name="buddy">
+           <cstring>recognitionModelComboBox</cstring>
+          </property>
          </widget>
         </item>
         <item row="0" column="1">
          <widget class="QComboBox" name="recognitionModelComboBox">
-          <property name="accessibleName"><string>Recognition Model</string></property>
-          <item><property name="text"><string>Inswapper128ArcFace</string></property></item>
-          <item><property name="text"><string>SimSwapArcFace</string></property></item>
-          <item><property name="text"><string>GhostArcFace</string></property></item>
-          <item><property name="text"><string>CSCSArcFace</string></property></item>
+          <property name="accessibleName">
+           <string>Recognition Model</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>Inswapper128ArcFace</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>SimSwapArcFace</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>GhostArcFace</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>CSCSArcFace</string>
+           </property>
+          </item>
          </widget>
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="faceDetectModelLabel">
-          <property name="text"><string>Face Detect Model</string></property>
-          <property name="buddy"><cstring>faceDetectModelComboBox</cstring></property>
+          <property name="text">
+           <string>Face Detect Model</string>
+          </property>
+          <property name="buddy">
+           <cstring>faceDetectModelComboBox</cstring>
+          </property>
          </widget>
         </item>
         <item row="1" column="1">
          <widget class="QComboBox" name="faceDetectModelComboBox">
-          <property name="accessibleName"><string>Face Detect Model</string></property>
-          <item><property name="text"><string>RetinaFace</string></property></item>
-          <item><property name="text"><string>Yolov8</string></property></item>
-          <item><property name="text"><string>SCRFD</string></property></item>
-          <item><property name="text"><string>Yunet</string></property></item>
-          <item><property name="text"><string>Yolov11 VR180</string></property></item>
-          <item><property name="text"><string>Yolov12 VR180</string></property></item>
+          <property name="accessibleName">
+           <string>Face Detect Model</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>RetinaFace</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Yolov8</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>SCRFD</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Yunet</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Yolov11 VR180</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Yolov12 VR180</string>
+           </property>
+          </item>
          </widget>
         </item>
         <item row="2" column="0">
          <widget class="QLabel" name="detectScoreLabel">
-          <property name="text"><string>Detect Score</string></property>
-          <property name="buddy"><cstring>detectScoreSlider</cstring></property>
+          <property name="text">
+           <string>Detect Score</string>
+          </property>
+          <property name="buddy">
+           <cstring>detectScoreSlider</cstring>
+          </property>
          </widget>
         </item>
         <item row="2" column="1">
          <widget class="QSlider" name="detectScoreSlider">
-          <property name="accessibleName"><string>Detect Score</string></property>
-          <property name="minimum"><number>1</number></property>
-          <property name="maximum"><number>100</number></property>
-          <property name="singleStep"><number>1</number></property>
-          <property name="value"><number>50</number></property>
-          <property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property>
+          <property name="accessibleName">
+           <string>Detect Score</string>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="singleStep">
+           <number>1</number>
+          </property>
+          <property name="value">
+           <number>50</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
          </widget>
         </item>
         <item row="3" column="0">
          <widget class="QLabel" name="landmarkDetectModelLabel">
-          <property name="text"><string>Landmark Detect Model</string></property>
-          <property name="buddy"><cstring>landmarkDetectModelComboBox</cstring></property>
+          <property name="text">
+           <string>Landmark Detect Model</string>
+          </property>
+          <property name="buddy">
+           <cstring>landmarkDetectModelComboBox</cstring>
+          </property>
          </widget>
         </item>
         <item row="3" column="1">
          <widget class="QComboBox" name="landmarkDetectModelComboBox">
-          <property name="accessibleName"><string>Landmark Detect Model</string></property>
-          <property name="currentIndex"><number>5</number></property>
-          <item><property name="text"><string>5</string></property></item>
-          <item><property name="text"><string>68</string></property></item>
-          <item><property name="text"><string>3d68</string></property></item>
-          <item><property name="text"><string>98</string></property></item>
-          <item><property name="text"><string>106</string></property></item>
-          <item><property name="text"><string>203</string></property></item>
-          <item><property name="text"><string>478</string></property></item>
-          <item><property name="text"><string>tufa98</string></property></item>
-          <item><property name="text"><string>tufa314</string></property></item>
-          <item><property name="text"><string>orformer98</string></property></item>
+          <property name="accessibleName">
+           <string>Landmark Detect Model</string>
+          </property>
+          <property name="currentIndex">
+           <number>5</number>
+          </property>
+          <item>
+           <property name="text">
+            <string>5</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>68</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>3d68</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>98</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>106</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>203</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>478</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>tufa98</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>tufa314</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>orformer98</string>
+           </property>
+          </item>
          </widget>
         </item>
         <item row="4" column="0">
          <widget class="QLabel" name="landmarkDetectScoreLabel">
-          <property name="text"><string>Landmark Detect Score</string></property>
-          <property name="buddy"><cstring>landmarkDetectScoreSlider</cstring></property>
+          <property name="text">
+           <string>Landmark Detect Score</string>
+          </property>
+          <property name="buddy">
+           <cstring>landmarkDetectScoreSlider</cstring>
+          </property>
          </widget>
         </item>
         <item row="4" column="1">
          <widget class="QSlider" name="landmarkDetectScoreSlider">
-          <property name="accessibleName"><string>Landmark Detect Score</string></property>
-          <property name="minimum"><number>1</number></property>
-          <property name="maximum"><number>100</number></property>
-          <property name="singleStep"><number>1</number></property>
-          <property name="value"><number>50</number></property>
-          <property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property>
+          <property name="accessibleName">
+           <string>Landmark Detect Score</string>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="singleStep">
+           <number>1</number>
+          </property>
+          <property name="value">
+           <number>50</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
          </widget>
         </item>
         <item row="5" column="0" colspan="2">
          <widget class="QCheckBox" name="showLandmarksCheckBox">
-          <property name="text"><string>Show Landmarks</string></property>
-          <property name="checked"><bool>false</bool></property>
+          <property name="text">
+           <string>Show Landmarks</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
          </widget>
         </item>
         <item row="6" column="0" colspan="2">
          <widget class="QCheckBox" name="showBoundingBoxesCheckBox">
-          <property name="text"><string>Show Bounding Boxes</string></property>
-          <property name="checked"><bool>false</bool></property>
+          <property name="text">
+           <string>Show Bounding Boxes</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
          </widget>
         </item>
        </layout>
@@ -486,8 +760,15 @@
      </item>
      <item>
       <spacer name="faceSettingsVerticalSpacer">
-       <property name="orientation"><enum>Qt::Orientation::Vertical</enum></property>
-       <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+       <property name="orientation">
+        <enum>Qt::Orientation::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
       </spacer>
      </item>
     </layout>
