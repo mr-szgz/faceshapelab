@@ -22,7 +22,6 @@ from PySide6.QtMultimedia import QMediaPlayer, QVideoSink
 from PySide6.QtWidgets import (
     QApplication,
     QFileDialog,
-    QFileSystemModel,
     QLabel,
     QMainWindow,
     QVBoxLayout,
@@ -30,6 +29,7 @@ from PySide6.QtWidgets import (
 )
 
 from faceshapelab.analysis_worker import AnalysisWorker, image_array
+from faceshapelab.files_tree import FilesTreeModel
 from faceshapelab.thumbnails import ThumbnailWorker
 from faceshapelab.ui.core.main_window import Ui_MainWindow
 
@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
         self.splitDockWidget(
             self.ui.filesFoldersDock, self.ui.savedFilesDock, Qt.Orientation.Vertical
         )
-        self.files_model = QFileSystemModel(self)
+        self.files_model = FilesTreeModel(self)
         self.ui.filesTree.setModel(self.files_model)
         self.ui.filesTree.sortByColumn(0, Qt.SortOrder.AscendingOrder)
         for column in (1, 2, 3):
