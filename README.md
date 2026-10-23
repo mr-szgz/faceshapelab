@@ -6,6 +6,56 @@ selections. No live-camera or VR processing is included.
 
 ## Setup
 
+### Windows online installer
+
+`dist/FaceShapeLab-0.2.0-Setup.exe` is a small online installer. It embeds only
+application source, the dependency lockfile, and setup metadata. Internet access is
+required: setup downloads uv 0.11.11, private Python 3.12.10, the locked production
+packages, and all 22 models (about 2.14 GB of model downloads). Python packages,
+including PyTorch, require several additional GB. uv and model downloads are
+SHA-256 verified; uv verifies package artifacts against `uv.lock`.
+
+Before downloads, setup runs `nvcc --version` from **`CUDA_PATH\bin`**. Set
+`CUDA_PATH` explicitly to your intended installed toolkit before running setup.
+Setup does not search for another toolkit or install, update, or configure system
+CUDA, NVIDIA drivers, PATH, or CUDA environment variables. The pinned PyTorch
+CUDA 12.8 wheel includes its own runtime DLLs inside the app's venv. The toolkit
+check confirms the configured toolkit is executable; it does not select a different
+PyTorch build. Setup also initializes the GPU and Qt and loads the ONNX Runtime
+CUDA libraries after installing dependencies.
+
+The default destination is `%LOCALAPPDATA%\Programs\FaceShapeLab`. The installer
+creates `python` and `.venv` beneath that directory, installs production dependencies
+without dev packages, and adds a Start menu shortcut. Uninstall removes these private
+runtimes and the downloaded models. Saved images belong outside the app directory.
+Reinstalling/upgrading synchronizes the locked environment and downloads the models
+again. Failed commands abort setup; there are no scripted retries or fallback providers.
+
+Build from source using Python 3.12+ and Inno Setup 6.5+ (no model files, Python
+environment, or dependency wheels are bundled from the build machine):
+
+```powershell
+python packaging/build_installer.py 'C:\Users\shoji\AppData\Local\Programs\Inno Setup 6\ISCC.exe'
+```
+
+Pass your installed `ISCC.exe` path as the argument. Model URLs and hashes come from
+`download_face_models.py`; `packaging/model-sizes.json` supplies download sizes for
+Inno Setup's progress display. Build output goes to `dist`. Setup writes an automatic
+log in the user's temporary directory; `/LOG="C:\path\setup.log"` selects a log file.
+Silent installation supports `/VERYSILENT /SUPPRESSMSGBOXES /NORESTART`.
+
+To verify failure handling against a compiled installer:
+
+```powershell
+python packaging/verify_failure_paths.py 'C:\Users\shoji\AppData\Local\Programs\Inno Setup 6\ISCC.exe' dist/FaceShapeLab-0.2.0-Setup.exe
+```
+
+This checks a missing CUDA toolkit and a dependency command returning exit code 37.
+For an installed copy, run `.venv\Scripts\python.exe verify_runtime.py` from its
+installation directory to exercise the application and a real CUDA model session.
+
+### Run from source
+
 Python 3.12+, Windows, and an NVIDIA CUDA-capable GPU are required for this implementation.
 The lockfile selects PyTorch CUDA 12.8 wheels and ONNX Runtime GPU 1.26.0. ONNX Runtime
 uses CUDA and CPU graph operations; inference exceptions propagate without retries.
@@ -32,8 +82,9 @@ the model test suite. No models are downloaded automatically when launching the 
 1. Drop an image or video onto either panel. For video, seek to the frame to analyze.
 2. Choose a detector and click **Detect Faces**, or click **Detect Landmarks** to run
    detection and the chosen landmark model together. Starting analysis pauses playback.
-3. Choose a face in the panel's selection list. Overlay checkboxes control boxes and
-   landmarks without altering the source pixels.
+3. Successful detection automatically opens the aligned **Face** preview. Use the
+   **Original / Face** selector to switch views. Choose a face in the panel's selection list. Overlay checkboxes control boxes and
+   landmarks in both views without altering the source pixels.
 4. **Save Face** writes the bounding-box crop. **Save Cropped Face** writes a 512×512
    ArcFace-128 aligned crop. Both save lossless RGB PNGs to the output folder with unique
    filenames and refresh Saved Files. Detected five-point landmarks can align a crop

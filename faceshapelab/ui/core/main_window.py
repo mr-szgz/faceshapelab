@@ -92,6 +92,13 @@ class Ui_MainWindow(object):
 
         self.leftPanelLayout.addLayout(self.leftPlaybackLayout)
 
+        self.leftPreviewModeComboBox = QComboBox(self.leftPanel)
+        self.leftPreviewModeComboBox.addItem("")
+        self.leftPreviewModeComboBox.addItem("")
+        self.leftPreviewModeComboBox.setObjectName(u"leftPreviewModeComboBox")
+
+        self.leftPanelLayout.addWidget(self.leftPreviewModeComboBox)
+
         self.leftControls = QGroupBox(self.leftPanel)
         self.leftControls.setObjectName(u"leftControls")
         self.leftControlsGrid = QGridLayout(self.leftControls)
@@ -184,6 +191,13 @@ class Ui_MainWindow(object):
 
 
         self.rightPanelLayout.addLayout(self.rightPlaybackLayout)
+
+        self.rightPreviewModeComboBox = QComboBox(self.rightPanel)
+        self.rightPreviewModeComboBox.addItem("")
+        self.rightPreviewModeComboBox.addItem("")
+        self.rightPreviewModeComboBox.setObjectName(u"rightPreviewModeComboBox")
+
+        self.rightPanelLayout.addWidget(self.rightPreviewModeComboBox)
 
         self.rightControls = QGroupBox(self.rightPanel)
         self.rightControls.setObjectName(u"rightControls")
@@ -483,6 +497,15 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(accessibility)
         self.leftSkipForwardButton.setText(QCoreApplication.translate("MainWindow", u"+2 s", None))
         self.leftTimeLabel.setText(QCoreApplication.translate("MainWindow", u"00:00 / 00:00", None))
+        self.leftPreviewModeComboBox.setItemText(0, QCoreApplication.translate("MainWindow", u"Original", None))
+        self.leftPreviewModeComboBox.setItemText(1, QCoreApplication.translate("MainWindow", u"Face", None))
+
+#if QT_CONFIG(accessibility)
+        self.leftPreviewModeComboBox.setAccessibleName(QCoreApplication.translate("MainWindow", u"Media 1 preview mode", None))
+#endif // QT_CONFIG(accessibility)
+#if QT_CONFIG(tooltip)
+        self.leftPreviewModeComboBox.setToolTip(QCoreApplication.translate("MainWindow", u"Original image with annotations or the selected face aligned and cropped.", None))
+#endif // QT_CONFIG(tooltip)
         self.leftControls.setTitle(QCoreApplication.translate("MainWindow", u"Controls", None))
         self.leftDetectFacesButton.setText(QCoreApplication.translate("MainWindow", u"Detect Faces", None))
         self.leftDetectLandmarksButton.setText(QCoreApplication.translate("MainWindow", u"Detect Landmarks", None))
@@ -525,6 +548,15 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(accessibility)
         self.rightSkipForwardButton.setText(QCoreApplication.translate("MainWindow", u"+2 s", None))
         self.rightTimeLabel.setText(QCoreApplication.translate("MainWindow", u"00:00 / 00:00", None))
+        self.rightPreviewModeComboBox.setItemText(0, QCoreApplication.translate("MainWindow", u"Original", None))
+        self.rightPreviewModeComboBox.setItemText(1, QCoreApplication.translate("MainWindow", u"Face", None))
+
+#if QT_CONFIG(accessibility)
+        self.rightPreviewModeComboBox.setAccessibleName(QCoreApplication.translate("MainWindow", u"Media 2 preview mode", None))
+#endif // QT_CONFIG(accessibility)
+#if QT_CONFIG(tooltip)
+        self.rightPreviewModeComboBox.setToolTip(QCoreApplication.translate("MainWindow", u"Original image with annotations or the selected face aligned and cropped.", None))
+#endif // QT_CONFIG(tooltip)
         self.rightControls.setTitle(QCoreApplication.translate("MainWindow", u"Controls", None))
         self.rightDetectFacesButton.setText(QCoreApplication.translate("MainWindow", u"Detect Faces", None))
         self.rightDetectLandmarksButton.setText(QCoreApplication.translate("MainWindow", u"Detect Landmarks", None))

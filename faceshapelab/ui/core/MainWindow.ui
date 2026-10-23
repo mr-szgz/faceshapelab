@@ -23,7 +23,7 @@
       <property name="title">
        <string>Media 1</string>
       </property>
-      <layout class="QVBoxLayout" name="leftPanelLayout" stretch="1,0,0">
+      <layout class="QVBoxLayout" name="leftPanelLayout" stretch="1,0,0,0">
        <item>
         <widget class="QLabel" name="leftImage">
          <property name="sizePolicy">
@@ -144,6 +144,18 @@
         </layout>
        </item>
        <item>
+        <widget class="QComboBox" name="leftPreviewModeComboBox">
+         <property name="accessibleName">
+          <string>Media 1 preview mode</string>
+         </property>
+         <property name="toolTip">
+          <string>Original image with annotations or the selected face aligned and cropped.</string>
+         </property>
+         <item><property name="text"><string>Original</string></property></item>
+         <item><property name="text"><string>Face</string></property></item>
+        </widget>
+       </item>
+       <item>
         <widget class="QGroupBox" name="leftControls">
          <property name="title">
           <string>Controls</string>
@@ -197,7 +209,7 @@
       <property name="title">
        <string>Media 2</string>
       </property>
-      <layout class="QVBoxLayout" name="rightPanelLayout" stretch="1,0,0">
+      <layout class="QVBoxLayout" name="rightPanelLayout" stretch="1,0,0,0">
        <item>
         <widget class="QLabel" name="rightImage">
          <property name="sizePolicy">
@@ -316,6 +328,18 @@
           </layout>
          </item>
         </layout>
+       </item>
+       <item>
+        <widget class="QComboBox" name="rightPreviewModeComboBox">
+         <property name="accessibleName">
+          <string>Media 2 preview mode</string>
+         </property>
+         <property name="toolTip">
+          <string>Original image with annotations or the selected face aligned and cropped.</string>
+         </property>
+         <item><property name="text"><string>Original</string></property></item>
+         <item><property name="text"><string>Face</string></property></item>
+        </widget>
        </item>
        <item>
         <widget class="QGroupBox" name="rightControls">

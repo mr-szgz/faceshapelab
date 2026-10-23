@@ -17,7 +17,7 @@ from PySide6.QtCore import (
     QUrl,
     Slot,
 )
-from PySide6.QtGui import QImageReader, QPainter, QPen, QPixmap
+from PySide6.QtGui import QImage, QImageReader, QPainter, QPen, QPixmap, QTransform
 from PySide6.QtMultimedia import QMediaPlayer, QVideoSink
 from PySide6.QtWidgets import (
     QApplication,
@@ -57,6 +57,9 @@ class MainWindow(QMainWindow):
         }
         self.image_pixmaps = {}
         self.face_results = {}
+        self.face_previews = {}
+        self.face_preview_matrices = {}
+        self.preview_modes = {}
         self.analysis_controls = {}
         self.media_players = {}
         self.video_sinks = {}
@@ -166,6 +169,11 @@ class MainWindow(QMainWindow):
             ]
             selection = getattr(self.ui, side + "SelectedFaceComboBox")
             self.analysis_controls[panel] = (*buttons, selection)
+            mode = getattr(self.ui, side + "PreviewModeComboBox")
+            self.preview_modes[panel] = mode
+            mode.currentIndexChanged.connect(
+                lambda index, p=panel: self.scale_image(self.panel_images[p])
+            )
             buttons[0].clicked.connect(
                 lambda checked=False, p=panel: self.start_analysis(p, "detect")
             )
@@ -485,13 +493,33 @@ class MainWindow(QMainWindow):
         if panel in self.face_results:
             key, detection, landmarks = self.face_results[panel]
             if key == self.image_pixmaps[label].cacheKey():
+                self.update_analysis_controls()
+                selected = self.analysis_controls[panel][4].currentIndex()
+                face_view = self.preview_modes[panel].currentText() == "Face"
+                if face_view:
+                    pixmap = self.face_previews[panel][selected].copy()
                 painter = QPainter(pixmap)
                 painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-                selected = self.analysis_controls[panel][4].currentIndex()
+                if face_view:
+                    matrix = self.face_preview_matrices[panel][selected]
+                    painter.setTransform(
+                        QTransform(
+                            matrix[0, 0],
+                            matrix[1, 0],
+                            matrix[0, 1],
+                            matrix[1, 1],
+                            matrix[0, 2],
+                            matrix[1, 2],
+                        )
+                    )
                 for index, (box, points) in enumerate(
                     zip(detection.boxes, detection.points5)
                 ):
+                    if face_view and index != selected:
+                        continue
                     width = max(1.0, pixmap.width() / 400)
+                    if face_view:
+                        width /= np.linalg.norm(matrix[:, 0])
                     if index == selected:
                         width *= 1.5
                     if self.ui.showBoundingBoxesCheckBox.isChecked():
@@ -518,7 +546,10 @@ class MainWindow(QMainWindow):
                 painter.end()
             else:
                 del self.face_results[panel]
+                del self.face_previews[panel]
+                del self.face_preview_matrices[panel]
                 self.analysis_controls[panel][4].clear()
+        self.update_analysis_controls()
         label.setPixmap(
             pixmap.scaled(
                 label.contentsRect().size(),
@@ -526,7 +557,6 @@ class MainWindow(QMainWindow):
                 Qt.TransformationMode.SmoothTransformation,
             )
         )
-        self.update_analysis_controls()
 
     @Slot()
     def redraw_analysis(self):
@@ -554,6 +584,13 @@ class MainWindow(QMainWindow):
                 or self.face_results[panel][2][selection.currentIndex()] is not None
             )
             crop.setEnabled(available and aligned)
+            mode = self.preview_modes[panel]
+            mode.setEnabled(available)
+            mode.model().item(1).setEnabled(bool(aligned))
+            if not aligned:
+                mode.blockSignals(True)
+                mode.setCurrentIndex(0)
+                mode.blockSignals(False)
             selection.setEnabled(not self.analysis_busy and detected)
         self.ui.compareFacesButton.setEnabled(
             not self.analysis_busy
@@ -617,7 +654,22 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage("Image changed; analysis result discarded.")
             return
         if action in ("detect", "landmarks"):
-            detection, landmarks = result
+            detection, landmarks, crops, matrices = result
+            self.face_preview_matrices[panel] = matrices
+            self.face_previews[panel] = [
+                QPixmap.fromImage(
+                    QImage(
+                        pixels.data,
+                        pixels.shape[1],
+                        pixels.shape[0],
+                        pixels.strides[0],
+                        QImage.Format.Format_RGB888,
+                    ).copy()
+                )
+                if pixels is not None
+                else None
+                for pixels in crops
+            ]
             self.face_results[panel] = (self.analysis_key, detection, landmarks)
             selection = self.analysis_controls[panel][4]
             selection.blockSignals(True)
@@ -629,7 +681,17 @@ class MainWindow(QMainWindow):
                 ]
             )
             selection.setCurrentIndex(0 if len(detection.boxes) else -1)
+            for index, pixels in enumerate(crops):
+                if pixels is not None:
+                    selection.setCurrentIndex(index)
+                    break
             selection.blockSignals(False)
+            mode = self.preview_modes[panel]
+            mode.blockSignals(True)
+            mode.setCurrentIndex(
+                1 if crops and crops[selection.currentIndex()] is not None else 0
+            )
+            mode.blockSignals(False)
             self.scale_image(label)
             message = f"{len(detection.boxes)} face(s) detected in {panel.title()}."
             if landmarks:

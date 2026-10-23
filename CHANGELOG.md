@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-23
+
 ### Added
+
+- Added independent Original/Face preview selectors with cached 512 × 512 aligned crops.
+- Added a small Windows online installer with locked dependency installation, private Python/venv, verified model downloads, and explicit `CUDA_PATH` checks.
 
 - Added CUDA face detection, eleven landmark modes, recognition, and aligned image crops from pinned VisoMaster-Fusion implementations.
 - Added a standalone downloader for the 22 image-analysis model assets.
@@ -20,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Automatically opened the first available aligned face after face or landmark detection.
+
 - Changed face bounding boxes to red and landmarks to yellow, with thicker overlays for the selected face.
 - Updated the Designer layout and synchronized the generated Python UI.
 
@@ -28,6 +35,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed VR detector selections while preserving video playback and frame analysis.
 
 ### Fixed
+
+- Transformed bounding boxes and landmarks into aligned face coordinates while preserving clean source and exported pixels.
+- Reset unavailable face previews when media changes or landmarks are rejected.
 
 - Synchronized CUDA inference with the background worker's PyTorch stream.
 - Corrected ArcFace-128 alignment offsets, dark-image landmark preprocessing, and YuNet confidence decoding.

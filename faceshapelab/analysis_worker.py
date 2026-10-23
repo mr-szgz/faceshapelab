@@ -27,6 +27,7 @@ class AnalysisWorker(QThread):
         import torch
 
         from faceshapelab.face_analysis.detection import FaceDetector
+        from faceshapelab.face_analysis.geometry import estimate_norm
         from faceshapelab.face_analysis.landmarks import LandmarkDetector
         from faceshapelab.face_analysis.recognition import FaceRecognizer, aligned_crop
         from faceshapelab.face_analysis.runtime import Runtime
@@ -55,7 +56,25 @@ class AnalysisWorker(QThread):
                     )
                     for box, points in zip(detection.boxes, detection.points5)
                 ]
-            self.completed.emit((detection, landmarks))
+            crops = [
+                aligned_crop(image, points)
+                if not landmarks
+                else aligned_crop(image, landmarks[index].points5)
+                if landmarks[index] is not None
+                else None
+                for index, points in enumerate(detection.points5)
+            ]
+            matrices = [
+                estimate_norm(
+                    landmarks[index].points5 if landmarks else points,
+                    512,
+                    "arcface128",
+                )[0]
+                if crops[index] is not None
+                else None
+                for index, points in enumerate(detection.points5)
+            ]
+            self.completed.emit((detection, landmarks, crops, matrices))
         elif self.action == "crop":
             self.completed.emit(aligned_crop(image, self.points5))
         elif self.action == "recognize":
