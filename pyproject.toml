@@ -1,0 +1,15 @@
+[project]
+name = "faceshapelab"
+version = "0.1.0"
+description = "Two-panel Qt layout for face photo comparison"
+requires-python = ">=3.12"
+dependencies = [
+    "pyside6>=6.12.0",
+]
+
+[project.scripts]
+faceshapelab = "faceshapelab.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
